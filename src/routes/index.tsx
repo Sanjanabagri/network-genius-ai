@@ -5,7 +5,8 @@ import {
   Menu, MessagesSquare, Network, Rocket, Server, ShieldCheck, Sparkles,
   Terminal, Wand2, Workflow, X, Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -53,6 +54,12 @@ function Logo({ className = "" }: { className?: string }) {
 
 function Nav() {
   const [open, setOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session));
+    return () => sub.subscription.unsubscribe();
+  }, []);
   const links = [
     { href: "#modules", label: "Modules" },
     { href: "#how", label: "How it works" },
@@ -72,12 +79,27 @@ function Nav() {
             ))}
           </nav>
           <div className="hidden items-center gap-2 md:flex">
-            <a href="#pricing" className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              Sign in
-            </a>
-            <a href="#pricing" className="group inline-flex items-center gap-1.5 rounded-lg bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-elevated transition-transform hover:-translate-y-0.5">
-              Get started <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </a>
+            {signedIn ? (
+              <Link
+                to="/dashboard"
+                className="group inline-flex items-center gap-1.5 rounded-lg bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-elevated transition-transform hover:-translate-y-0.5"
+              >
+                Go to dashboard <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            ) : (
+              <>
+                <Link to="/auth" className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                  Sign in
+                </Link>
+                <Link
+                  to="/auth"
+                  search={{ mode: "signup" }}
+                  className="group inline-flex items-center gap-1.5 rounded-lg bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-elevated transition-transform hover:-translate-y-0.5"
+                >
+                  Get started <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </>
+            )}
           </div>
           <button
             onClick={() => setOpen(!open)}
@@ -95,9 +117,15 @@ function Nav() {
                   {l.label}
                 </a>
               ))}
-              <a href="#pricing" className="mt-2 rounded-lg bg-gradient-primary px-4 py-2 text-center text-sm font-semibold text-primary-foreground">
-                Get started
-              </a>
+              {signedIn ? (
+                <Link to="/dashboard" className="mt-2 rounded-lg bg-gradient-primary px-4 py-2 text-center text-sm font-semibold text-primary-foreground">
+                  Go to dashboard
+                </Link>
+              ) : (
+                <Link to="/auth" search={{ mode: "signup" }} className="mt-2 rounded-lg bg-gradient-primary px-4 py-2 text-center text-sm font-semibold text-primary-foreground">
+                  Get started
+                </Link>
+              )}
             </nav>
           </div>
         )}
