@@ -214,15 +214,21 @@ function Logos() {
 
 /* ---------------- MODULES ---------------- */
 const modules = [
-  { icon: Wand2, title: "AI Config Generator", desc: "Cisco, Palo Alto, Fortinet, SD-WAN. VLAN, BGP, OSPF, MPLS, security policies — validated and rollback-ready.", color: "primary" },
-  { icon: Terminal, title: "CLI Troubleshooter", desc: "Paste `show` output. Get root cause, severity, next commands, and escalation guidance in seconds.", color: "accent" },
-  { icon: FileCode2, title: "Automation Scripts", desc: "Python (Netmiko, NAPALM, Nornir), Ansible, and Terraform playbooks generated on demand.", color: "secondary" },
-  { icon: GitBranch, title: "Change Management", desc: "Auto-generated MOPs, rollback plans, risk assessment and impact analysis. Export to PDF/DOCX.", color: "primary" },
-  { icon: FileText, title: "Documentation", desc: "Turn running configs into device inventories, IP plans, and executive architecture summaries.", color: "accent" },
-  { icon: MessagesSquare, title: "Incident Manager", desc: "Convert raw logs into a clear timeline, summary, resolution, and lessons learned.", color: "secondary" },
-  { icon: Activity, title: "SD-WAN Analyzer", desc: "Health-score TLOCs and tunnels. Surface packet loss, jitter, and latency with recommendations.", color: "primary" },
-  { icon: Boxes, title: "Learning Center", desc: "CCNA/CCNP, Palo Alto, SD-WAN notes and interview prep — searchable with progress tracking.", color: "accent" },
+  { icon: Wand2, title: "AI Config Generator", desc: "Cisco, Palo Alto, Fortinet, SD-WAN. VLAN, BGP, OSPF, MPLS, security policies — validated and rollback-ready.", tone: "primary" as const },
+  { icon: Terminal, title: "CLI Troubleshooter", desc: "Paste `show` output. Get root cause, severity, next commands, and escalation guidance in seconds.", tone: "accent" as const },
+  { icon: FileCode2, title: "Automation Scripts", desc: "Python (Netmiko, NAPALM, Nornir), Ansible, and Terraform playbooks generated on demand.", tone: "secondary" as const },
+  { icon: GitBranch, title: "Change Management", desc: "Auto-generated MOPs, rollback plans, risk assessment and impact analysis. Export to PDF/DOCX.", tone: "primary" as const },
+  { icon: FileText, title: "Documentation", desc: "Turn running configs into device inventories, IP plans, and executive architecture summaries.", tone: "accent" as const },
+  { icon: MessagesSquare, title: "Incident Manager", desc: "Convert raw logs into a clear timeline, summary, resolution, and lessons learned.", tone: "secondary" as const },
+  { icon: Activity, title: "SD-WAN Analyzer", desc: "Health-score TLOCs and tunnels. Surface packet loss, jitter, and latency with recommendations.", tone: "primary" as const },
+  { icon: Boxes, title: "Learning Center", desc: "CCNA/CCNP, Palo Alto, SD-WAN notes and interview prep — searchable with progress tracking.", tone: "accent" as const },
 ];
+
+const toneStyles = {
+  primary: { bg: "bg-primary/15", text: "text-primary", glow: "bg-primary" },
+  secondary: { bg: "bg-secondary/15", text: "text-secondary", glow: "bg-secondary" },
+  accent: { bg: "bg-accent/20", text: "text-accent", glow: "bg-accent" },
+};
 
 function Modules() {
   return (
@@ -243,14 +249,15 @@ function Modules() {
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {modules.map((m, i) => {
             const Icon = m.icon;
+            const s = toneStyles[m.tone];
             return (
               <div
                 key={m.title}
                 className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-elevated animate-fade-up"
                 style={{ animationDelay: `${i * 0.05}s` }}
               >
-                <div className={`absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-40 bg-${m.color}`} />
-                <div className={`inline-grid h-11 w-11 place-items-center rounded-xl bg-${m.color}/15 text-${m.color}`}>
+                <div className={`absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-40 ${s.glow}`} />
+                <div className={`inline-grid h-11 w-11 place-items-center rounded-xl ${s.bg} ${s.text}`}>
                   <Icon className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 font-display text-base font-semibold">{m.title}</h3>
