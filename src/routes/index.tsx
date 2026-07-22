@@ -379,10 +379,16 @@ clear counters Gi0/1</pre>
 }
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: "destructive" | "accent" | "secondary" }) {
+  const toneMap = {
+    destructive: "bg-destructive/10 text-destructive",
+    accent: "bg-accent/10 text-accent",
+    secondary: "bg-secondary/10 text-secondary",
+  };
+  const [bg, text] = toneMap[tone].split(" ");
   return (
-    <div className={`rounded-lg border border-border bg-${tone}/10 p-3`}>
+    <div className={`rounded-lg border border-border p-3 ${bg}`}>
       <div className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className={`mt-1 font-display text-xl font-bold text-${tone}`}>{value}</div>
+      <div className={`mt-1 font-display text-xl font-bold ${text}`}>{value}</div>
     </div>
   );
 }
