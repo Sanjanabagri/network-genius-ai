@@ -3,11 +3,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import {
-  Activity, ArrowLeft, Bot, Boxes, Copy, FileCode2, FileText, GitBranch,
+  Activity, ArrowLeft, Bot, Boxes, Copy, FileCode2, FileDown, FileText, GitBranch,
   Loader2, MessagesSquare, Sparkles, Terminal, Wand2, Workflow,
 } from "lucide-react";
 import { toast } from "sonner";
 import { runAiTask, type ToolId } from "@/lib/ai.functions";
+import { exportAsPdf, exportAsDocx } from "@/lib/export-output";
 
 type ToolDef = {
   id: ToolId;
@@ -141,6 +142,22 @@ function ToolPage() {
   const [language, setLanguage] = useState(tool.languages?.[0] ?? "");
   const [prompt, setPrompt] = useState("");
   const [output, setOutput] = useState("");
+  const [exporting, setExporting] = useState<null | "pdf" | "docx">(null);
+
+  async function handleExport(kind: "pdf" | "docx") {
+    if (!output) return;
+    setExporting(kind);
+    try {
+      if (kind === "pdf") await exportAsPdf(tool.title, output);
+      else await exportAsDocx(tool.title, output);
+      toast.success(`Downloaded ${kind.toUpperCase()}`);
+    } catch (e) {
+      toast.error(`Export failed`, { description: (e as Error).message });
+    } finally {
+      setExporting(null);
+    }
+  }
+
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -245,15 +262,33 @@ function ToolPage() {
           <div className="flex items-center justify-between">
             <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">Output</h2>
             {output && (
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(output);
-                  toast.success("Copied to clipboard");
-                }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium hover:bg-muted"
-              >
-                <Copy className="h-3.5 w-3.5" /> Copy
-              </button>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(output);
+                    toast.success("Copied to clipboard");
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium hover:bg-muted"
+                >
+                  <Copy className="h-3.5 w-3.5" /> Copy
+                </button>
+                <button
+                  onClick={() => handleExport("pdf")}
+                  disabled={exporting !== null}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium hover:bg-muted disabled:opacity-60"
+                >
+                  {exporting === "pdf" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
+                  {exporting === "pdf" ? "Exporting…" : "PDF"}
+                </button>
+                <button
+                  onClick={() => handleExport("docx")}
+                  disabled={exporting !== null}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium hover:bg-muted disabled:opacity-60"
+                >
+                  {exporting === "docx" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
+                  {exporting === "docx" ? "Exporting…" : "DOCX"}
+                </button>
+              </div>
             )}
           </div>
 
