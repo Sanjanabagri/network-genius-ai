@@ -262,15 +262,33 @@ function ToolPage() {
           <div className="flex items-center justify-between">
             <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">Output</h2>
             {output && (
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(output);
-                  toast.success("Copied to clipboard");
-                }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium hover:bg-muted"
-              >
-                <Copy className="h-3.5 w-3.5" /> Copy
-              </button>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(output);
+                    toast.success("Copied to clipboard");
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium hover:bg-muted"
+                >
+                  <Copy className="h-3.5 w-3.5" /> Copy
+                </button>
+                <button
+                  onClick={() => handleExport("pdf")}
+                  disabled={exporting !== null}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium hover:bg-muted disabled:opacity-60"
+                >
+                  {exporting === "pdf" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
+                  {exporting === "pdf" ? "Exporting…" : "PDF"}
+                </button>
+                <button
+                  onClick={() => handleExport("docx")}
+                  disabled={exporting !== null}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium hover:bg-muted disabled:opacity-60"
+                >
+                  {exporting === "docx" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
+                  {exporting === "docx" ? "Exporting…" : "DOCX"}
+                </button>
+              </div>
             )}
           </div>
 
