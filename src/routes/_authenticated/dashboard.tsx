@@ -59,16 +59,21 @@ function Dashboard() {
           {modules.map((m) => {
             const Icon = m.icon;
             return (
-              <div key={m.title} className="group rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-1 hover:shadow-elevated">
-                <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-primary/15 text-primary">
+              <Link
+                key={m.id}
+                to="/tools/$tool"
+                params={{ tool: m.id }}
+                className="group rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-1 hover:shadow-elevated"
+              >
+                <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-primary/15 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                   <Icon className="h-5 w-5" />
                 </div>
                 <h3 className="mt-3 font-display text-base font-semibold">{m.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{m.desc}</p>
-                <span className="mt-3 inline-block rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Coming soon
+                <span className="mt-3 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary">
+                  Open →
                 </span>
-              </div>
+              </Link>
             );
           })}
         </div>
