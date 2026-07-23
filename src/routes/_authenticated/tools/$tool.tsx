@@ -193,7 +193,7 @@ function ToolPage() {
                 onChange={(e) => setVendor(e.target.value)}
                 className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
               >
-                {tool.vendors.map((v) => <option key={v} value={v}>{v}</option>)}
+                {tool.vendors.map((v: string) => <option key={v} value={v}>{v}</option>)}
               </select>
             </div>
           )}
