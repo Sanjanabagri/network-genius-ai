@@ -142,6 +142,22 @@ function ToolPage() {
   const [language, setLanguage] = useState(tool.languages?.[0] ?? "");
   const [prompt, setPrompt] = useState("");
   const [output, setOutput] = useState("");
+  const [exporting, setExporting] = useState<null | "pdf" | "docx">(null);
+
+  async function handleExport(kind: "pdf" | "docx") {
+    if (!output) return;
+    setExporting(kind);
+    try {
+      if (kind === "pdf") await exportAsPdf(tool.title, output);
+      else await exportAsDocx(tool.title, output);
+      toast.success(`Downloaded ${kind.toUpperCase()}`);
+    } catch (e) {
+      toast.error(`Export failed`, { description: (e as Error).message });
+    } finally {
+      setExporting(null);
+    }
+  }
+
 
   const mutation = useMutation({
     mutationFn: async () => {
