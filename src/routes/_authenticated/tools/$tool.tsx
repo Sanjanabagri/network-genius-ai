@@ -3,11 +3,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import {
-  Activity, ArrowLeft, Bot, Boxes, Copy, FileCode2, FileText, GitBranch,
+  Activity, ArrowLeft, Bot, Boxes, Copy, FileCode2, FileDown, FileText, GitBranch,
   Loader2, MessagesSquare, Sparkles, Terminal, Wand2, Workflow,
 } from "lucide-react";
 import { toast } from "sonner";
 import { runAiTask, type ToolId } from "@/lib/ai.functions";
+import { exportAsPdf, exportAsDocx } from "@/lib/export-output";
 
 type ToolDef = {
   id: ToolId;
