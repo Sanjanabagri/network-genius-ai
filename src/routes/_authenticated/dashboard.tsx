@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Activity, Boxes, FileCode2, FileText, GitBranch, MessagesSquare, Rocket, Shield, Terminal, Wand2 } from "lucide-react";
+import { Activity, FileCode2, FileText, GitBranch, MessagesSquare, Rocket, Shield, Terminal, Wand2, Workflow } from "lucide-react";
+import type { ToolId } from "@/lib/ai.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -11,15 +12,16 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const modules = [
-  { icon: Wand2, title: "AI Config Generator", desc: "Cisco, Palo Alto, Fortinet, SD-WAN" },
-  { icon: Terminal, title: "CLI Troubleshooter", desc: "Root cause from show output" },
-  { icon: FileCode2, title: "Automation Scripts", desc: "Python, Ansible, Terraform" },
-  { icon: GitBranch, title: "Change Management", desc: "MOP, rollback, risk" },
-  { icon: FileText, title: "Documentation", desc: "Configs → docs, IP plans" },
-  { icon: MessagesSquare, title: "Incident Manager", desc: "Timeline, RCA, resolution" },
-  { icon: Activity, title: "SD-WAN Analyzer", desc: "TLOC & tunnel health" },
-  { icon: Boxes, title: "Learning Center", desc: "CCNA/CCNP, Palo Alto, SD-WAN" },
+const modules: { id: ToolId; icon: React.ComponentType<{ className?: string }>; title: string; desc: string }[] = [
+  { id: "config", icon: Wand2, title: "AI Config Generator", desc: "Cisco, Palo Alto, Fortinet, SD-WAN" },
+  { id: "troubleshoot", icon: Terminal, title: "CLI Troubleshooter", desc: "Root cause from show output" },
+  { id: "script", icon: FileCode2, title: "Automation Scripts", desc: "Python, Ansible, Terraform" },
+  { id: "mop", icon: GitBranch, title: "MOP / Change Request", desc: "Steps, checks, rollback" },
+  { id: "rollback", icon: GitBranch, title: "Rollback Plan", desc: "Backout with verification" },
+  { id: "cli", icon: Activity, title: "CLI Output Analyzer", desc: "Read show/log output like a pro" },
+  { id: "docs", icon: FileText, title: "Network Documentation", desc: "Configs → docs, IP plans" },
+  { id: "incident", icon: MessagesSquare, title: "Incident Summary", desc: "Timeline, RCA, action items" },
+  { id: "workflow", icon: Workflow, title: "Workflow Designer", desc: "End-to-end automation" },
 ];
 
 function Dashboard() {
