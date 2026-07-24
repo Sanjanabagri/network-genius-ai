@@ -292,6 +292,14 @@ function ToolPage() {
             {output && (
               <div className="flex flex-wrap items-center gap-1.5">
                 <button
+                  onClick={() => saveMutation.mutate()}
+                  disabled={saveMutation.isPending || savedId !== null}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+                >
+                  {saveMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                  {savedId ? "Saved" : saveMutation.isPending ? "Saving…" : "Save as project"}
+                </button>
+                <button
                   onClick={() => {
                     navigator.clipboard.writeText(output);
                     toast.success("Copied to clipboard");
