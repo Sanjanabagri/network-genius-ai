@@ -8,7 +8,7 @@ import { listProjects, deleteProject, type SavedProject } from "@/lib/saved-proj
 const projectsQO = (fn: () => Promise<SavedProject[]>) =>
   queryOptions({ queryKey: ["saved_projects"], queryFn: fn });
 
-export const Route = createFileRoute("/_authenticated/projects")({
+export const Route = createFileRoute("/_authenticated/projects/")({
   head: () => ({
     meta: [
       { title: "Saved Projects · NetAssist AI" },

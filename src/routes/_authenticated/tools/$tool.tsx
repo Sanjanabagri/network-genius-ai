@@ -1,14 +1,15 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   Activity, ArrowLeft, Bot, Boxes, Copy, FileCode2, FileDown, FileText, GitBranch,
-  Loader2, MessagesSquare, Sparkles, Terminal, Wand2, Workflow,
+  Loader2, MessagesSquare, Save, Sparkles, Terminal, Wand2, Workflow,
 } from "lucide-react";
 import { toast } from "sonner";
 import { runAiTask, type ToolId } from "@/lib/ai.functions";
 import { exportAsPdf, exportAsDocx } from "@/lib/export-output";
+import { saveProject } from "@/lib/saved-projects.functions";
 
 type ToolDef = {
   id: ToolId;
