@@ -1,14 +1,15 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   Activity, ArrowLeft, Bot, Boxes, Copy, FileCode2, FileDown, FileText, GitBranch,
-  Loader2, MessagesSquare, Sparkles, Terminal, Wand2, Workflow,
+  Loader2, MessagesSquare, Save, Sparkles, Terminal, Wand2, Workflow,
 } from "lucide-react";
 import { toast } from "sonner";
 import { runAiTask, type ToolId } from "@/lib/ai.functions";
 import { exportAsPdf, exportAsDocx } from "@/lib/export-output";
+import { saveProject } from "@/lib/saved-projects.functions";
 
 type ToolDef = {
   id: ToolId;
@@ -138,11 +139,38 @@ function ToolPage() {
   const { tool } = Route.useLoaderData();
   const navigate = useNavigate();
   const run = useServerFn(runAiTask);
+  const save = useServerFn(saveProject);
+  const qc = useQueryClient();
   const [vendor, setVendor] = useState(tool.vendors?.[0] ?? "");
   const [language, setLanguage] = useState(tool.languages?.[0] ?? "");
   const [prompt, setPrompt] = useState("");
   const [output, setOutput] = useState("");
   const [exporting, setExporting] = useState<null | "pdf" | "docx">(null);
+  const [savedId, setSavedId] = useState<string | null>(null);
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const title = prompt.trim().split("\n")[0].slice(0, 80) || tool.title;
+      return save({
+        data: {
+          tool: tool.id,
+          title,
+          vendor: tool.vendors ? vendor : null,
+          language: tool.languages ? language : null,
+          prompt,
+          output,
+        },
+      });
+    },
+    onSuccess: (row) => {
+      setSavedId(row.id);
+      qc.invalidateQueries({ queryKey: ["saved_projects"] });
+      toast.success("Saved to your projects", {
+        action: { label: "View", onClick: () => navigate({ to: "/projects/$id", params: { id: row.id } }) },
+      });
+    },
+    onError: (e: Error) => toast.error("Save failed", { description: e.message }),
+  });
 
   async function handleExport(kind: "pdf" | "docx") {
     if (!output) return;
@@ -171,7 +199,7 @@ function ToolPage() {
       });
       return r.content;
     },
-    onSuccess: (content) => setOutput(content),
+    onSuccess: (content) => { setOutput(content); setSavedId(null); },
     onError: (e: Error) => toast.error("AI request failed", { description: e.message }),
   });
 
@@ -263,6 +291,14 @@ function ToolPage() {
             <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">Output</h2>
             {output && (
               <div className="flex flex-wrap items-center gap-1.5">
+                <button
+                  onClick={() => saveMutation.mutate()}
+                  disabled={saveMutation.isPending || savedId !== null}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+                >
+                  {saveMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                  {savedId ? "Saved" : saveMutation.isPending ? "Saving…" : "Save as project"}
+                </button>
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(output);
