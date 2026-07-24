@@ -61,6 +61,9 @@ function AuthedLayout() {
             </button>
             {menuOpen && (
               <div className="absolute right-0 mt-2 w-52 overflow-hidden rounded-xl border border-border bg-popover shadow-elevated animate-fade-up">
+                <Link to="/projects" className="flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted">
+                  <FolderOpen className="h-4 w-4 text-muted-foreground" /> Saved projects
+                </Link>
                 <Link to="/settings/security" className="flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted">
                   <Shield className="h-4 w-4 text-muted-foreground" /> Two-factor auth
                 </Link>
