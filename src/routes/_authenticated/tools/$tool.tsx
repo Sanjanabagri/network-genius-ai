@@ -139,11 +139,38 @@ function ToolPage() {
   const { tool } = Route.useLoaderData();
   const navigate = useNavigate();
   const run = useServerFn(runAiTask);
+  const save = useServerFn(saveProject);
+  const qc = useQueryClient();
   const [vendor, setVendor] = useState(tool.vendors?.[0] ?? "");
   const [language, setLanguage] = useState(tool.languages?.[0] ?? "");
   const [prompt, setPrompt] = useState("");
   const [output, setOutput] = useState("");
   const [exporting, setExporting] = useState<null | "pdf" | "docx">(null);
+  const [savedId, setSavedId] = useState<string | null>(null);
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const title = prompt.trim().split("\n")[0].slice(0, 80) || tool.title;
+      return save({
+        data: {
+          tool: tool.id,
+          title,
+          vendor: tool.vendors ? vendor : null,
+          language: tool.languages ? language : null,
+          prompt,
+          output,
+        },
+      });
+    },
+    onSuccess: (row) => {
+      setSavedId(row.id);
+      qc.invalidateQueries({ queryKey: ["saved_projects"] });
+      toast.success("Saved to your projects", {
+        action: { label: "View", onClick: () => navigate({ to: "/projects/$id", params: { id: row.id } }) },
+      });
+    },
+    onError: (e: Error) => toast.error("Save failed", { description: e.message }),
+  });
 
   async function handleExport(kind: "pdf" | "docx") {
     if (!output) return;
