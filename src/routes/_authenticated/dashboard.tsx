@@ -40,17 +40,26 @@ function Dashboard() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: "AI requests today", value: "0", sub: "of 10 free" },
-          { label: "Configurations", value: "0", sub: "all-time" },
-          { label: "Scripts generated", value: "0", sub: "all-time" },
-          { label: "Saved projects", value: "0", sub: "of 5" },
-        ].map((s) => (
-          <div key={s.label} className="rounded-2xl border border-border bg-card p-5">
-            <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{s.label}</div>
-            <div className="mt-2 font-display text-3xl font-bold">{s.value}</div>
-            <div className="mt-1 text-xs text-muted-foreground">{s.sub}</div>
-          </div>
-        ))}
+          { label: "AI requests today", value: "0", sub: "of 10 free", to: null as string | null },
+          { label: "Configurations", value: "0", sub: "all-time", to: null },
+          { label: "Scripts generated", value: "0", sub: "all-time", to: null },
+          { label: "Saved projects", value: "—", sub: "view history", to: "/projects" },
+        ].map((s) => {
+          const inner = (
+            <>
+              <div className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{s.label}</div>
+              <div className="mt-2 font-display text-3xl font-bold">{s.value}</div>
+              <div className="mt-1 text-xs text-muted-foreground">{s.sub}</div>
+            </>
+          );
+          return s.to ? (
+            <Link key={s.label} to={s.to} className="rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:shadow-elevated">
+              {inner}
+            </Link>
+          ) : (
+            <div key={s.label} className="rounded-2xl border border-border bg-card p-5">{inner}</div>
+          );
+        })}
       </div>
 
       <div className="mt-10">
