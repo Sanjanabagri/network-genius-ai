@@ -50,6 +50,45 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_projects: {
+        Row: {
+          created_at: string
+          id: string
+          language: string | null
+          output: string
+          prompt: string
+          title: string
+          tool: string
+          updated_at: string
+          user_id: string
+          vendor: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language?: string | null
+          output: string
+          prompt: string
+          title: string
+          tool: string
+          updated_at?: string
+          user_id: string
+          vendor?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string | null
+          output?: string
+          prompt?: string
+          title?: string
+          tool?: string
+          updated_at?: string
+          user_id?: string
+          vendor?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
