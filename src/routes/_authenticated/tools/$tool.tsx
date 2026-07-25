@@ -348,6 +348,34 @@ function ToolPage() {
             </div>
           )}
 
+          {tool.multiVendors && (
+            <div className="mt-4">
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+                Target vendors ({selectedVendors.length} selected)
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {tool.multiVendors.map((v: string) => {
+                  const on = selectedVendors.includes(v);
+                  return (
+                    <button
+                      type="button"
+                      key={v}
+                      onClick={() => toggleVendor(v)}
+                      className={
+                        "rounded-full border px-3 py-1 text-xs font-medium transition-colors " +
+                        (on
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background text-muted-foreground hover:text-foreground")
+                      }
+                    >
+                      {v}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {tool.languages && (
             <div className="mt-4">
               <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Language / Framework</label>
@@ -360,6 +388,7 @@ function ToolPage() {
               </select>
             </div>
           )}
+
 
           <div className="mt-4">
             <div className="mb-1.5 flex items-center justify-between">
