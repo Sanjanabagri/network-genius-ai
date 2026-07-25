@@ -182,10 +182,67 @@ function ToolPage() {
   const qc = useQueryClient();
   const [vendor, setVendor] = useState(tool.vendors?.[0] ?? "");
   const [language, setLanguage] = useState(tool.languages?.[0] ?? "");
+  const [selectedVendors, setSelectedVendors] = useState<string[]>(
+    tool.multiVendors ? tool.multiVendors.slice(0, 3) : [],
+  );
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [prompt, setPrompt] = useState("");
   const [output, setOutput] = useState("");
   const [exporting, setExporting] = useState<null | "pdf" | "docx">(null);
   const [savedId, setSavedId] = useState<string | null>(null);
+
+  function toggleVendor(v: string) {
+    setSelectedVendors((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
+  }
+
+  async function readFileAsDataUrl(f: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(f);
+    });
+  }
+  async function readFileAsText(f: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = () => reject(r.error);
+      r.readAsText(f);
+    });
+  }
+
+  async function ingestFiles(files: FileList | File[]) {
+    const list = Array.from(files);
+    for (const f of list) {
+      if (attachments.length >= 6) {
+        toast.error("Max 6 attachments");
+        break;
+      }
+      if (f.size > 6 * 1024 * 1024) {
+        toast.error(`${f.name} is larger than 6 MB`);
+        continue;
+      }
+      try {
+        if (f.type.startsWith("image/")) {
+          const dataUrl = await readFileAsDataUrl(f);
+          setAttachments((prev) => [...prev, { name: f.name, mime: f.type, dataUrl, size: f.size }]);
+        } else {
+          // Treat as text log; inline into prompt evidence
+          const text = await readFileAsText(f);
+          setPrompt((prev) =>
+            (prev ? prev + "\n\n" : "") + `--- ${f.name} ---\n${text.slice(0, 40000)}`,
+          );
+          toast.success(`Inlined ${f.name} into prompt`);
+        }
+      } catch {
+        toast.error(`Could not read ${f.name}`);
+      }
+    }
+  }
+
 
   const saveMutation = useMutation({
     mutationFn: async () => {
