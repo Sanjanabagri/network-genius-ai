@@ -1,15 +1,17 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
-  Activity, ArrowLeft, Bot, Boxes, Copy, FileCode2, FileDown, FileText, GitBranch,
-  Loader2, MessagesSquare, Save, Sparkles, Terminal, Wand2, Workflow,
+  Activity, ArrowLeft, Bot, Copy, FileCode2, FileDown, FileText, GitBranch,
+  Layers, Loader2, MessagesSquare, Paperclip, Save, Search, Sparkles, Terminal, Wand2, Workflow, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { runAiTask, type ToolId } from "@/lib/ai.functions";
 import { exportAsPdf, exportAsDocx } from "@/lib/export-output";
 import { saveProject } from "@/lib/saved-projects.functions";
+
+type Attachment = { name: string; mime: string; dataUrl: string; size: number };
 
 type ToolDef = {
   id: ToolId;
@@ -17,10 +19,13 @@ type ToolDef = {
   tagline: string;
   icon: React.ComponentType<{ className?: string }>;
   vendors?: string[];
+  multiVendors?: string[];
   languages?: string[];
+  allowAttachments?: boolean;
   placeholder: string;
   example: string;
 };
+
 
 const TOOLS: Record<ToolId, ToolDef> = {
   config: {
