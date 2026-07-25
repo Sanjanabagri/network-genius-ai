@@ -289,8 +289,12 @@ function ToolPage() {
         data: {
           tool: tool.id,
           vendor: tool.vendors ? vendor : undefined,
+          vendors: tool.multiVendors ? selectedVendors : undefined,
           language: tool.languages ? language : undefined,
           prompt,
+          attachments: attachments.length
+            ? attachments.map((a) => ({ name: a.name, mime: a.mime, dataUrl: a.dataUrl }))
+            : undefined,
         },
       });
       return r.content;
@@ -298,6 +302,11 @@ function ToolPage() {
     onSuccess: (content) => { setOutput(content); setSavedId(null); },
     onError: (e: Error) => toast.error("AI request failed", { description: e.message }),
   });
+
+  const canSubmit =
+    prompt.trim().length >= 3 &&
+    (!tool.multiVendors || selectedVendors.length > 0);
+
 
   const Icon = tool.icon;
 
