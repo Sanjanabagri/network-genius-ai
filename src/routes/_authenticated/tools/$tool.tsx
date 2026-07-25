@@ -1,15 +1,17 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
-  Activity, ArrowLeft, Bot, Boxes, Copy, FileCode2, FileDown, FileText, GitBranch,
-  Loader2, MessagesSquare, Save, Sparkles, Terminal, Wand2, Workflow,
+  Activity, ArrowLeft, Bot, Copy, FileCode2, FileDown, FileText, GitBranch,
+  Layers, Loader2, MessagesSquare, Paperclip, Save, Search, Sparkles, Terminal, Wand2, Workflow, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { runAiTask, type ToolId } from "@/lib/ai.functions";
 import { exportAsPdf, exportAsDocx } from "@/lib/export-output";
 import { saveProject } from "@/lib/saved-projects.functions";
+
+type Attachment = { name: string; mime: string; dataUrl: string; size: number };
 
 type ToolDef = {
   id: ToolId;
@@ -17,10 +19,13 @@ type ToolDef = {
   tagline: string;
   icon: React.ComponentType<{ className?: string }>;
   vendors?: string[];
+  multiVendors?: string[];
   languages?: string[];
+  allowAttachments?: boolean;
   placeholder: string;
   example: string;
 };
+
 
 const TOOLS: Record<ToolId, ToolDef> = {
   config: {
@@ -97,6 +102,40 @@ const TOOLS: Record<ToolId, ToolDef> = {
     placeholder: "Describe the outcome you want to automate…",
     example: "Auto-remediate high CPU alerts on Cisco switches by collecting show tech and opening a Jira ticket.",
   },
+  "multi-vendor": {
+    id: "multi-vendor",
+    title: "Multi-Vendor Config Generator",
+    tagline: "Generate the same feature side-by-side across every major vendor.",
+    icon: Layers,
+    multiVendors: [
+      "Cisco IOS", "Cisco IOS-XE", "Cisco Nexus (NX-OS)", "Palo Alto PAN-OS",
+      "Fortinet FortiOS", "Juniper Junos", "Aruba AOS-CX", "VMware NSX",
+      "F5 BIG-IP (TMSH)", "Check Point Gaia",
+    ],
+    placeholder: "Describe the feature or use case…",
+    example: "Configure OSPF Area 0 on two uplinks with MD5 authentication and BFD.",
+  },
+  troubleshooter: {
+    id: "troubleshooter",
+    title: "AI Network Troubleshooter",
+    tagline: "Upload logs and screenshots or paste CLI — get root cause and next steps.",
+    icon: Search,
+    allowAttachments: true,
+    placeholder: "Describe the symptom, then paste any CLI output. Attach log files or screenshots below.",
+    example: "Site A cannot reach 10.20.0.0/16. `show ip route` on the edge router has no matching entry; BGP session to 10.0.0.2 is stuck in Active.",
+  },
+  "automation-studio": {
+    id: "automation-studio",
+    title: "Automation Studio",
+    tagline: "Production scripts, tests, and docs for Python, Ansible, Terraform, and more.",
+    icon: FileCode2,
+    languages: [
+      "Python (raw)", "Python (Netmiko)", "Python (Paramiko)",
+      "Python (NAPALM)", "Python (Nornir)", "Ansible", "Terraform",
+    ],
+    placeholder: "Describe what the script should automate…",
+    example: "Back up running-config from 100 Cisco IOS devices to timestamped files in ./backups.",
+  },
 };
 
 export const TOOL_LIST: ToolDef[] = Object.values(TOOLS);
@@ -143,10 +182,67 @@ function ToolPage() {
   const qc = useQueryClient();
   const [vendor, setVendor] = useState(tool.vendors?.[0] ?? "");
   const [language, setLanguage] = useState(tool.languages?.[0] ?? "");
+  const [selectedVendors, setSelectedVendors] = useState<string[]>(
+    tool.multiVendors ? tool.multiVendors.slice(0, 3) : [],
+  );
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [prompt, setPrompt] = useState("");
   const [output, setOutput] = useState("");
   const [exporting, setExporting] = useState<null | "pdf" | "docx">(null);
   const [savedId, setSavedId] = useState<string | null>(null);
+
+  function toggleVendor(v: string) {
+    setSelectedVendors((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
+  }
+
+  async function readFileAsDataUrl(f: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(f);
+    });
+  }
+  async function readFileAsText(f: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = () => reject(r.error);
+      r.readAsText(f);
+    });
+  }
+
+  async function ingestFiles(files: FileList | File[]) {
+    const list = Array.from(files);
+    for (const f of list) {
+      if (attachments.length >= 6) {
+        toast.error("Max 6 attachments");
+        break;
+      }
+      if (f.size > 6 * 1024 * 1024) {
+        toast.error(`${f.name} is larger than 6 MB`);
+        continue;
+      }
+      try {
+        if (f.type.startsWith("image/")) {
+          const dataUrl = await readFileAsDataUrl(f);
+          setAttachments((prev) => [...prev, { name: f.name, mime: f.type, dataUrl, size: f.size }]);
+        } else {
+          // Treat as text log; inline into prompt evidence
+          const text = await readFileAsText(f);
+          setPrompt((prev) =>
+            (prev ? prev + "\n\n" : "") + `--- ${f.name} ---\n${text.slice(0, 40000)}`,
+          );
+          toast.success(`Inlined ${f.name} into prompt`);
+        }
+      } catch {
+        toast.error(`Could not read ${f.name}`);
+      }
+    }
+  }
+
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -193,8 +289,12 @@ function ToolPage() {
         data: {
           tool: tool.id,
           vendor: tool.vendors ? vendor : undefined,
+          vendors: tool.multiVendors ? selectedVendors : undefined,
           language: tool.languages ? language : undefined,
           prompt,
+          attachments: attachments.length
+            ? attachments.map((a) => ({ name: a.name, mime: a.mime, dataUrl: a.dataUrl }))
+            : undefined,
         },
       });
       return r.content;
@@ -202,6 +302,11 @@ function ToolPage() {
     onSuccess: (content) => { setOutput(content); setSavedId(null); },
     onError: (e: Error) => toast.error("AI request failed", { description: e.message }),
   });
+
+  const canSubmit =
+    prompt.trim().length >= 3 &&
+    (!tool.multiVendors || selectedVendors.length > 0);
+
 
   const Icon = tool.icon;
 
@@ -243,6 +348,34 @@ function ToolPage() {
             </div>
           )}
 
+          {tool.multiVendors && (
+            <div className="mt-4">
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+                Target vendors ({selectedVendors.length} selected)
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {tool.multiVendors.map((v: string) => {
+                  const on = selectedVendors.includes(v);
+                  return (
+                    <button
+                      type="button"
+                      key={v}
+                      onClick={() => toggleVendor(v)}
+                      className={
+                        "rounded-full border px-3 py-1 text-xs font-medium transition-colors " +
+                        (on
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background text-muted-foreground hover:text-foreground")
+                      }
+                    >
+                      {v}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {tool.languages && (
             <div className="mt-4">
               <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Language / Framework</label>
@@ -255,6 +388,7 @@ function ToolPage() {
               </select>
             </div>
           )}
+
 
           <div className="mt-4">
             <div className="mb-1.5 flex items-center justify-between">
@@ -276,14 +410,71 @@ function ToolPage() {
             />
           </div>
 
+          {tool.allowAttachments && (
+            <div className="mt-4">
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+                Evidence (log files, screenshots)
+              </label>
+              <div
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOver(false);
+                  if (e.dataTransfer.files.length) ingestFiles(e.dataTransfer.files);
+                }}
+                onClick={() => fileInputRef.current?.click()}
+                className={
+                  "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed p-4 text-center text-xs transition-colors " +
+                  (dragOver ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-primary/50")
+                }
+              >
+                <Paperclip className="h-4 w-4" />
+                <span>Drop files here or click to browse (images, .log, .txt — max 6 files, 6 MB each)</span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*,.log,.txt,.json,.yaml,.yml,.conf,.cfg"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files?.length) ingestFiles(e.target.files);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+              {attachments.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {attachments.map((a, i) => (
+                    <li key={i} className="flex items-center justify-between rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs">
+                      <span className="truncate">
+                        <span className="font-mono">{a.name}</span>
+                        <span className="ml-2 text-muted-foreground">{Math.round(a.size / 1024)} KB</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
+                        className="text-muted-foreground hover:text-destructive"
+                        aria-label={`Remove ${a.name}`}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
           <button
             onClick={() => mutation.mutate()}
-            disabled={mutation.isPending || prompt.trim().length < 3}
+            disabled={mutation.isPending || !canSubmit}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-elevated transition-transform hover:-translate-y-0.5 disabled:opacity-60"
           >
             {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
             {mutation.isPending ? "Generating…" : "Generate with AI"}
           </button>
+
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-5">

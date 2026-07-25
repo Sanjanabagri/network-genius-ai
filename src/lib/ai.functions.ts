@@ -12,15 +12,29 @@ const TOOL_IDS = [
   "docs",
   "incident",
   "workflow",
+  // Enhancement modules — additive, do not remove originals.
+  "multi-vendor",
+  "troubleshooter",
+  "automation-studio",
 ] as const;
 
 export type ToolId = (typeof TOOL_IDS)[number];
 
+const AttachmentSchema = z.object({
+  name: z.string().max(200),
+  mime: z.string().max(120),
+  // data URL (image/*) — capped ~6MB base64
+  dataUrl: z.string().max(8_500_000),
+});
+
 const InputSchema = z.object({
   tool: z.enum(TOOL_IDS),
   vendor: z.string().max(80).optional(),
+  vendors: z.array(z.string().max(80)).max(12).optional(),
   language: z.string().max(80).optional(),
   prompt: z.string().min(3).max(20000),
+  attachedText: z.string().max(60000).optional(),
+  attachments: z.array(AttachmentSchema).max(6).optional(),
 });
 
 const SYSTEMS: Record<ToolId, string> = {
@@ -42,7 +56,18 @@ const SYSTEMS: Record<ToolId, string> = {
     "You are an incident commander. From the notes/timeline provided, produce an executive incident summary: TL;DR, Impact, Timeline (bulleted), Root Cause, Resolution, Action Items (owner, due). Use markdown, be crisp.",
   workflow:
     "You are an automation architect. Design an end-to-end automation workflow for the described goal. Output: Workflow overview, Trigger, Steps (numbered, with tools/APIs per step), Data model, Error handling, Rollout plan. Include a mermaid flowchart.",
+
+  "multi-vendor":
+    "You are a multi-vendor network architect fluent in Cisco IOS/IOS-XE/NX-OS, Palo Alto PAN-OS, Fortinet FortiOS, Juniper Junos, Aruba AOS-CX, VMware NSX, F5 TMSH, and Check Point Gaia. For the requested use case, produce for EACH selected vendor: a `## <Vendor>` section containing (a) a short 1-2 line summary, (b) the full configuration in a single fenced code block using that vendor's native CLI/syntax, (c) a bullet list of vendor-specific caveats. After all vendor sections, add: `## Best Practices` (bullets), `## Security Recommendations` (bullets), and `## Cross-Vendor Comparison` (a small markdown table of feature parity / gotchas). Never invent IP addresses; use clearly marked placeholders like <MGMT_IP>. Validate syntax mentally and call out any placeholders the operator must fill.",
+  troubleshooter:
+    "You are a senior network troubleshooter analyzing evidence which may include pasted CLI output, uploaded log files, and screenshots of dashboards or CLI sessions. Read every attachment carefully. Produce, using markdown headings: `## Problem Summary`, `## Root Cause`, `## Alternate Causes` (ranked), `## Recommended Actions` (numbered, with exact CLI in fenced blocks), `## Verification Steps` (fenced CLI), `## Preventive Measures`. When referencing evidence, quote the exact log line or screenshot region. If evidence is ambiguous, state your confidence and what additional data would confirm.",
+  "automation-studio":
+    "You are a principal network automation engineer. For the requested task and target language/framework (Python raw, Netmiko, Paramiko, NAPALM, Nornir, Ansible, or Terraform), produce a complete, production-quality deliverable with these sections: `## Overview` (1-2 lines), `## Script` (a single fenced code block, idempotent, with error handling, logging, and clear TODO markers where the operator must supply inventory/credentials), `## Requirements` (pip packages / collections / providers with pinned major versions), `## Execution` (exact commands to run), `## Unit Tests` (a fenced block using pytest/unittest, or ansible-lint / molecule scenario, or terraform validate — whichever fits the framework), `## Explanation` (short walkthrough of the key blocks), `## Documentation` (markdown suitable for a README). Never hardcode credentials — reference environment variables.",
 };
+
+type ContentBlock =
+  | { type: "text"; text: string }
+  | { type: "image_url"; image_url: { url: string } };
 
 export const runAiTask = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -52,14 +77,33 @@ export const runAiTask = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("LOVABLE_API_KEY is not configured.");
 
     const system = SYSTEMS[data.tool];
-    const userMsg = [
+    const header = [
       data.vendor ? `Vendor / Platform: ${data.vendor}` : null,
+      data.vendors?.length ? `Target vendors: ${data.vendors.join(", ")}` : null,
       data.language ? `Language / Framework: ${data.language}` : null,
-      "",
-      data.prompt,
     ]
-      .filter((x) => x !== null)
+      .filter(Boolean)
       .join("\n");
+
+    const textParts = [header, data.prompt].filter((s) => s && s.length > 0).join("\n\n");
+    const attachedText = data.attachedText?.trim()
+      ? `\n\n--- Attached text evidence ---\n${data.attachedText.slice(0, 60000)}`
+      : "";
+
+    const imageAttachments = (data.attachments ?? []).filter((a) => a.mime.startsWith("image/"));
+
+    let userContent: string | ContentBlock[];
+    if (imageAttachments.length > 0) {
+      userContent = [
+        { type: "text", text: textParts + attachedText },
+        ...imageAttachments.map<ContentBlock>((a) => ({
+          type: "image_url",
+          image_url: { url: a.dataUrl },
+        })),
+      ];
+    } else {
+      userContent = textParts + attachedText;
+    }
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -71,7 +115,7 @@ export const runAiTask = createServerFn({ method: "POST" })
         model: "google/gemini-3.6-flash",
         messages: [
           { role: "system", content: system },
-          { role: "user", content: userMsg },
+          { role: "user", content: userContent },
         ],
       }),
     });

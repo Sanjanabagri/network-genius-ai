@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Activity, FileCode2, FileText, GitBranch, MessagesSquare, Rocket, Shield, Terminal, Wand2, Workflow } from "lucide-react";
+import { Activity, FileCode2, FileText, GitBranch, Layers, MessagesSquare, Rocket, Search, Shield, Terminal, Wand2, Workflow } from "lucide-react";
 import type { ToolId } from "@/lib/ai.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -12,7 +12,10 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const modules: { id: ToolId; icon: React.ComponentType<{ className?: string }>; title: string; desc: string }[] = [
+const modules: { id: ToolId; icon: React.ComponentType<{ className?: string }>; title: string; desc: string; badge?: string }[] = [
+  { id: "multi-vendor", icon: Layers, title: "Multi-Vendor Config Generator", desc: "Cisco, Palo Alto, Fortinet, Juniper, Aruba…", badge: "New" },
+  { id: "troubleshooter", icon: Search, title: "AI Network Troubleshooter", desc: "Upload logs & screenshots, get root cause", badge: "New" },
+  { id: "automation-studio", icon: FileCode2, title: "Automation Studio", desc: "Python, Netmiko, NAPALM, Nornir, Ansible, Terraform", badge: "New" },
   { id: "config", icon: Wand2, title: "AI Config Generator", desc: "Cisco, Palo Alto, Fortinet, SD-WAN" },
   { id: "troubleshoot", icon: Terminal, title: "CLI Troubleshooter", desc: "Root cause from show output" },
   { id: "script", icon: FileCode2, title: "Automation Scripts", desc: "Python, Ansible, Terraform" },
@@ -23,6 +26,7 @@ const modules: { id: ToolId; icon: React.ComponentType<{ className?: string }>; 
   { id: "incident", icon: MessagesSquare, title: "Incident Summary", desc: "Timeline, RCA, action items" },
   { id: "workflow", icon: Workflow, title: "Workflow Designer", desc: "End-to-end automation" },
 ];
+
 
 function Dashboard() {
   const { user } = Route.useRouteContext();
@@ -74,14 +78,22 @@ function Dashboard() {
                 params={{ tool: m.id }}
                 className="group rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-1 hover:shadow-elevated"
               >
-                <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-primary/15 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                  <Icon className="h-5 w-5" />
+                <div className="flex items-start justify-between gap-2">
+                  <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-primary/15 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  {m.badge && (
+                    <span className="rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-accent">
+                      {m.badge}
+                    </span>
+                  )}
                 </div>
                 <h3 className="mt-3 font-display text-base font-semibold">{m.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{m.desc}</p>
                 <span className="mt-3 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary">
                   Open →
                 </span>
+
               </Link>
             );
           })}
