@@ -410,14 +410,71 @@ function ToolPage() {
             />
           </div>
 
+          {tool.allowAttachments && (
+            <div className="mt-4">
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+                Evidence (log files, screenshots)
+              </label>
+              <div
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOver(false);
+                  if (e.dataTransfer.files.length) ingestFiles(e.dataTransfer.files);
+                }}
+                onClick={() => fileInputRef.current?.click()}
+                className={
+                  "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed p-4 text-center text-xs transition-colors " +
+                  (dragOver ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-primary/50")
+                }
+              >
+                <Paperclip className="h-4 w-4" />
+                <span>Drop files here or click to browse (images, .log, .txt — max 6 files, 6 MB each)</span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*,.log,.txt,.json,.yaml,.yml,.conf,.cfg"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files?.length) ingestFiles(e.target.files);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+              {attachments.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {attachments.map((a, i) => (
+                    <li key={i} className="flex items-center justify-between rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs">
+                      <span className="truncate">
+                        <span className="font-mono">{a.name}</span>
+                        <span className="ml-2 text-muted-foreground">{Math.round(a.size / 1024)} KB</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
+                        className="text-muted-foreground hover:text-destructive"
+                        aria-label={`Remove ${a.name}`}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
           <button
             onClick={() => mutation.mutate()}
-            disabled={mutation.isPending || prompt.trim().length < 3}
+            disabled={mutation.isPending || !canSubmit}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-elevated transition-transform hover:-translate-y-0.5 disabled:opacity-60"
           >
             {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
             {mutation.isPending ? "Generating…" : "Generate with AI"}
           </button>
+
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-5">
