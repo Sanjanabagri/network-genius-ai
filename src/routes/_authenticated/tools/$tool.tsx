@@ -102,6 +102,40 @@ const TOOLS: Record<ToolId, ToolDef> = {
     placeholder: "Describe the outcome you want to automate…",
     example: "Auto-remediate high CPU alerts on Cisco switches by collecting show tech and opening a Jira ticket.",
   },
+  "multi-vendor": {
+    id: "multi-vendor",
+    title: "Multi-Vendor Config Generator",
+    tagline: "Generate the same feature side-by-side across every major vendor.",
+    icon: Layers,
+    multiVendors: [
+      "Cisco IOS", "Cisco IOS-XE", "Cisco Nexus (NX-OS)", "Palo Alto PAN-OS",
+      "Fortinet FortiOS", "Juniper Junos", "Aruba AOS-CX", "VMware NSX",
+      "F5 BIG-IP (TMSH)", "Check Point Gaia",
+    ],
+    placeholder: "Describe the feature or use case…",
+    example: "Configure OSPF Area 0 on two uplinks with MD5 authentication and BFD.",
+  },
+  troubleshooter: {
+    id: "troubleshooter",
+    title: "AI Network Troubleshooter",
+    tagline: "Upload logs and screenshots or paste CLI — get root cause and next steps.",
+    icon: Search,
+    allowAttachments: true,
+    placeholder: "Describe the symptom, then paste any CLI output. Attach log files or screenshots below.",
+    example: "Site A cannot reach 10.20.0.0/16. `show ip route` on the edge router has no matching entry; BGP session to 10.0.0.2 is stuck in Active.",
+  },
+  "automation-studio": {
+    id: "automation-studio",
+    title: "Automation Studio",
+    tagline: "Production scripts, tests, and docs for Python, Ansible, Terraform, and more.",
+    icon: FileCode2,
+    languages: [
+      "Python (raw)", "Python (Netmiko)", "Python (Paramiko)",
+      "Python (NAPALM)", "Python (Nornir)", "Ansible", "Terraform",
+    ],
+    placeholder: "Describe what the script should automate…",
+    example: "Back up running-config from 100 Cisco IOS devices to timestamped files in ./backups.",
+  },
 };
 
 export const TOOL_LIST: ToolDef[] = Object.values(TOOLS);
