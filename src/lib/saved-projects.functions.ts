@@ -4,6 +4,7 @@ import { z } from "zod";
 
 const TOOL_IDS = [
   "config", "troubleshoot", "script", "mop", "rollback", "cli", "docs", "incident", "workflow",
+  "multi-vendor", "troubleshooter", "automation-studio",
 ] as const;
 
 export type SavedProject = {
@@ -15,6 +16,7 @@ export type SavedProject = {
   language: string | null;
   prompt: string;
   output: string;
+  team_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -26,7 +28,9 @@ const SaveSchema = z.object({
   language: z.string().max(120).nullish(),
   prompt: z.string().min(1).max(20000),
   output: z.string().min(1).max(200000),
+  teamId: z.string().uuid().nullish(),
 });
+
 
 export const saveProject = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
