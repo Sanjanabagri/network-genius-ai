@@ -1,6 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Activity, FileCode2, FileText, GitBranch, Layers, MessagesSquare, Rocket, Search, Shield, Terminal, Wand2, Workflow } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import { Activity, FileCode2, FileText, GitBranch, GraduationCap, Layers, MessagesSquare, Rocket, Search, Shield, Terminal, Users, Wand2, Workflow } from "lucide-react";
 import type { ToolId } from "@/lib/ai.functions";
+import { listProjects } from "@/lib/saved-projects.functions";
+import { listTeams } from "@/lib/teams.functions";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
