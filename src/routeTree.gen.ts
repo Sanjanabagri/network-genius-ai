@@ -19,6 +19,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedTeamsIndexRouteImport } from './routes/_authenticated/teams.index'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
 import { Route as AuthenticatedToolsToolRouteImport } from './routes/_authenticated/tools/$tool'
+import { Route as AuthenticatedTeamsIdRouteImport } from './routes/_authenticated/teams.$id'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 
@@ -72,6 +73,11 @@ const AuthenticatedToolsToolRoute = AuthenticatedToolsToolRouteImport.update({
   path: '/tools/$tool',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTeamsIdRoute = AuthenticatedTeamsIdRouteImport.update({
+  id: '/teams/$id',
+  path: '/teams/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSettingsSecurityRoute =
   AuthenticatedSettingsSecurityRouteImport.update({
     id: '/settings/security',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/auth/forgot': typeof AuthForgotRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/teams/$id': typeof AuthenticatedTeamsIdRoute
   '/tools/$tool': typeof AuthenticatedToolsToolRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
   '/teams/': typeof AuthenticatedTeamsIndexRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/auth/forgot': typeof AuthForgotRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/teams/$id': typeof AuthenticatedTeamsIdRoute
   '/tools/$tool': typeof AuthenticatedToolsToolRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/teams': typeof AuthenticatedTeamsIndexRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/auth/forgot': typeof AuthForgotRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/_authenticated/teams/$id': typeof AuthenticatedTeamsIdRoute
   '/_authenticated/tools/$tool': typeof AuthenticatedToolsToolRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/_authenticated/teams/': typeof AuthenticatedTeamsIndexRoute
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/auth/forgot'
     | '/projects/$id'
     | '/settings/security'
+    | '/teams/$id'
     | '/tools/$tool'
     | '/projects/'
     | '/teams/'
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/auth/forgot'
     | '/projects/$id'
     | '/settings/security'
+    | '/teams/$id'
     | '/tools/$tool'
     | '/projects'
     | '/teams'
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/auth/forgot'
     | '/_authenticated/projects/$id'
     | '/_authenticated/settings/security'
+    | '/_authenticated/teams/$id'
     | '/_authenticated/tools/$tool'
     | '/_authenticated/projects/'
     | '/_authenticated/teams/'
@@ -248,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedToolsToolRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/teams/$id': {
+      id: '/_authenticated/teams/$id'
+      path: '/teams/$id'
+      fullPath: '/teams/$id'
+      preLoaderRoute: typeof AuthenticatedTeamsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/security': {
       id: '/_authenticated/settings/security'
       path: '/settings/security'
@@ -269,6 +288,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
   AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
+  AuthenticatedTeamsIdRoute: typeof AuthenticatedTeamsIdRoute
   AuthenticatedToolsToolRoute: typeof AuthenticatedToolsToolRoute
   AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
   AuthenticatedTeamsIndexRoute: typeof AuthenticatedTeamsIndexRoute
@@ -278,6 +298,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
   AuthenticatedSettingsSecurityRoute: AuthenticatedSettingsSecurityRoute,
+  AuthenticatedTeamsIdRoute: AuthenticatedTeamsIdRoute,
   AuthenticatedToolsToolRoute: AuthenticatedToolsToolRoute,
   AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
   AuthenticatedTeamsIndexRoute: AuthenticatedTeamsIndexRoute,
