@@ -61,15 +61,25 @@ function AuthedLayout() {
             </button>
             {menuOpen && (
               <div className="absolute right-0 mt-2 w-52 overflow-hidden rounded-xl border border-border bg-popover shadow-elevated animate-fade-up">
+                <Link to="/dashboard" className="flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted">
+                  <LayoutDashboard className="h-4 w-4 text-muted-foreground" /> Dashboard
+                </Link>
                 <Link to="/projects" className="flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted">
                   <FolderOpen className="h-4 w-4 text-muted-foreground" /> Saved projects
+                </Link>
+                <Link to="/teams" className="flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted">
+                  <Users className="h-4 w-4 text-muted-foreground" /> Teams
+                </Link>
+                <Link to="/learn" className="flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted">
+                  <GraduationCap className="h-4 w-4 text-muted-foreground" /> Learning Center
+                </Link>
+                <Link to="/settings/profile" className="flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted">
+                  <Settings className="h-4 w-4 text-muted-foreground" /> Profile
                 </Link>
                 <Link to="/settings/security" className="flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted">
                   <Shield className="h-4 w-4 text-muted-foreground" /> Two-factor auth
                 </Link>
-                <Link to="/dashboard" className="flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted">
-                  <Settings className="h-4 w-4 text-muted-foreground" /> Dashboard
-                </Link>
+
                 <button onClick={signOut} className="flex w-full items-center gap-2 border-t border-border px-3 py-2.5 text-left text-sm text-destructive hover:bg-muted">
                   <LogOut className="h-4 w-4" /> Sign out
                 </button>
