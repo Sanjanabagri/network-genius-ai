@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Copy, FileDown, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, FileDown, Loader2, Trash2, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getProject, deleteProject } from "@/lib/saved-projects.functions";
+import { getProject, deleteProject, shareProjectWithTeam } from "@/lib/saved-projects.functions";
+import { listTeams } from "@/lib/teams.functions";
 import { exportAsPdf, exportAsDocx } from "@/lib/export-output";
+
 
 export const Route = createFileRoute("/_authenticated/projects/$id")({
   head: ({ params }) => ({
