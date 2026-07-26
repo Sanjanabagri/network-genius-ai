@@ -193,7 +193,7 @@ function ToolPage() {
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const search = Route.useSearch();
-  const [prompt, setPrompt] = useState(search.prompt ?? "");
+  const [prompt, setPrompt] = useState<string>(search.prompt ?? "");
 
   const [output, setOutput] = useState("");
   const [exporting, setExporting] = useState<null | "pdf" | "docx">(null);
