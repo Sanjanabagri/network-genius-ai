@@ -15,10 +15,14 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
+import { Route as AuthenticatedLearnRouteImport } from './routes/_authenticated/learn'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedTeamsIndexRouteImport } from './routes/_authenticated/teams.index'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
 import { Route as AuthenticatedToolsToolRouteImport } from './routes/_authenticated/tools/$tool'
+import { Route as AuthenticatedTeamsIdRouteImport } from './routes/_authenticated/teams.$id'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
+import { Route as AuthenticatedSettingsProfileRouteImport } from './routes/_authenticated/settings.profile'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -50,9 +54,19 @@ const AuthForgotRoute = AuthForgotRouteImport.update({
   path: '/forgot',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthenticatedLearnRoute = AuthenticatedLearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTeamsIndexRoute = AuthenticatedTeamsIndexRouteImport.update({
+  id: '/teams/',
+  path: '/teams/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProjectsIndexRoute =
@@ -66,10 +80,21 @@ const AuthenticatedToolsToolRoute = AuthenticatedToolsToolRouteImport.update({
   path: '/tools/$tool',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTeamsIdRoute = AuthenticatedTeamsIdRouteImport.update({
+  id: '/teams/$id',
+  path: '/teams/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSettingsSecurityRoute =
   AuthenticatedSettingsSecurityRouteImport.update({
     id: '/settings/security',
     path: '/settings/security',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSettingsProfileRoute =
+  AuthenticatedSettingsProfileRouteImport.update({
+    id: '/settings/profile',
+    path: '/settings/profile',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdRouteImport.update({
@@ -84,11 +109,15 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/teams/$id': typeof AuthenticatedTeamsIdRoute
   '/tools/$tool': typeof AuthenticatedToolsToolRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
+  '/teams/': typeof AuthenticatedTeamsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -96,11 +125,15 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/teams/$id': typeof AuthenticatedTeamsIdRoute
   '/tools/$tool': typeof AuthenticatedToolsToolRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
+  '/teams': typeof AuthenticatedTeamsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -110,11 +143,15 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/_authenticated/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/_authenticated/teams/$id': typeof AuthenticatedTeamsIdRoute
   '/_authenticated/tools/$tool': typeof AuthenticatedToolsToolRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
+  '/_authenticated/teams/': typeof AuthenticatedTeamsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -124,11 +161,15 @@ export interface FileRouteTypes {
     | '/home'
     | '/reset-password'
     | '/dashboard'
+    | '/learn'
     | '/auth/forgot'
     | '/projects/$id'
+    | '/settings/profile'
     | '/settings/security'
+    | '/teams/$id'
     | '/tools/$tool'
     | '/projects/'
+    | '/teams/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -136,11 +177,15 @@ export interface FileRouteTypes {
     | '/home'
     | '/reset-password'
     | '/dashboard'
+    | '/learn'
     | '/auth/forgot'
     | '/projects/$id'
+    | '/settings/profile'
     | '/settings/security'
+    | '/teams/$id'
     | '/tools/$tool'
     | '/projects'
+    | '/teams'
   id:
     | '__root__'
     | '/'
@@ -149,11 +194,15 @@ export interface FileRouteTypes {
     | '/home'
     | '/reset-password'
     | '/_authenticated/dashboard'
+    | '/_authenticated/learn'
     | '/auth/forgot'
     | '/_authenticated/projects/$id'
+    | '/_authenticated/settings/profile'
     | '/_authenticated/settings/security'
+    | '/_authenticated/teams/$id'
     | '/_authenticated/tools/$tool'
     | '/_authenticated/projects/'
+    | '/_authenticated/teams/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -208,11 +257,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_authenticated/learn': {
+      id: '/_authenticated/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof AuthenticatedLearnRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/teams/': {
+      id: '/_authenticated/teams/'
+      path: '/teams'
+      fullPath: '/teams/'
+      preLoaderRoute: typeof AuthenticatedTeamsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/projects/': {
@@ -229,11 +292,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedToolsToolRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/teams/$id': {
+      id: '/_authenticated/teams/$id'
+      path: '/teams/$id'
+      fullPath: '/teams/$id'
+      preLoaderRoute: typeof AuthenticatedTeamsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/security': {
       id: '/_authenticated/settings/security'
       path: '/settings/security'
       fullPath: '/settings/security'
       preLoaderRoute: typeof AuthenticatedSettingsSecurityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/profile': {
+      id: '/_authenticated/settings/profile'
+      path: '/settings/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof AuthenticatedSettingsProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/projects/$id': {
@@ -248,18 +325,26 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedLearnRoute: typeof AuthenticatedLearnRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
+  AuthenticatedSettingsProfileRoute: typeof AuthenticatedSettingsProfileRoute
   AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
+  AuthenticatedTeamsIdRoute: typeof AuthenticatedTeamsIdRoute
   AuthenticatedToolsToolRoute: typeof AuthenticatedToolsToolRoute
   AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
+  AuthenticatedTeamsIndexRoute: typeof AuthenticatedTeamsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedLearnRoute: AuthenticatedLearnRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
+  AuthenticatedSettingsProfileRoute: AuthenticatedSettingsProfileRoute,
   AuthenticatedSettingsSecurityRoute: AuthenticatedSettingsSecurityRoute,
+  AuthenticatedTeamsIdRoute: AuthenticatedTeamsIdRoute,
   AuthenticatedToolsToolRoute: AuthenticatedToolsToolRoute,
   AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
+  AuthenticatedTeamsIndexRoute: AuthenticatedTeamsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -285,13 +370,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

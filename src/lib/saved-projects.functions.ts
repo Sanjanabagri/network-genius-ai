@@ -4,6 +4,7 @@ import { z } from "zod";
 
 const TOOL_IDS = [
   "config", "troubleshoot", "script", "mop", "rollback", "cli", "docs", "incident", "workflow",
+  "multi-vendor", "troubleshooter", "automation-studio",
 ] as const;
 
 export type SavedProject = {
@@ -15,6 +16,7 @@ export type SavedProject = {
   language: string | null;
   prompt: string;
   output: string;
+  team_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -26,7 +28,9 @@ const SaveSchema = z.object({
   language: z.string().max(120).nullish(),
   prompt: z.string().min(1).max(20000),
   output: z.string().min(1).max(200000),
+  teamId: z.string().uuid().nullish(),
 });
+
 
 export const saveProject = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -43,7 +47,9 @@ export const saveProject = createServerFn({ method: "POST" })
         language: data.language ?? null,
         prompt: data.prompt,
         output: data.output,
+        team_id: data.teamId ?? null,
       })
+
       .select()
       .single();
     if (error) throw new Error(error.message);
@@ -86,3 +92,18 @@ export const deleteProject = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const shareProjectWithTeam = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ id: z.string().uuid(), teamId: z.string().uuid().nullable() }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("saved_projects")
+      .update({ team_id: data.teamId })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+

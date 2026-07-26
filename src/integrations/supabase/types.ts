@@ -57,6 +57,7 @@ export type Database = {
           language: string | null
           output: string
           prompt: string
+          team_id: string | null
           title: string
           tool: string
           updated_at: string
@@ -69,6 +70,7 @@ export type Database = {
           language?: string | null
           output: string
           prompt: string
+          team_id?: string | null
           title: string
           tool: string
           updated_at?: string
@@ -81,11 +83,114 @@ export type Database = {
           language?: string | null
           output?: string
           prompt?: string
+          team_id?: string | null
           title?: string
           tool?: string
           updated_at?: string
           user_id?: string
           vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_projects_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_invites: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          id: string
+          invited_by: string
+          role: Database["public"]["Enums"]["team_role"]
+          team_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          invited_by: string
+          role?: Database["public"]["Enums"]["team_role"]
+          team_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string
+          role?: Database["public"]["Enums"]["team_role"]
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_invites_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["team_role"]
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["team_role"]
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["team_role"]
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -115,6 +220,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_manage_team: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -122,9 +231,18 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_team_member: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: boolean
+      }
+      team_role_of: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: Database["public"]["Enums"]["team_role"]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
+      team_role: "owner" | "admin" | "member" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -253,6 +371,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      team_role: ["owner", "admin", "member", "viewer"],
     },
   },
 } as const

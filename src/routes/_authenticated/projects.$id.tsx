@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Copy, FileDown, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, FileDown, Loader2, Trash2, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getProject, deleteProject } from "@/lib/saved-projects.functions";
+import { getProject, deleteProject, shareProjectWithTeam } from "@/lib/saved-projects.functions";
+import { listTeams } from "@/lib/teams.functions";
 import { exportAsPdf, exportAsDocx } from "@/lib/export-output";
+
 
 export const Route = createFileRoute("/_authenticated/projects/$id")({
   head: ({ params }) => ({
@@ -39,6 +41,19 @@ function ProjectDetail() {
     },
     onError: (e: Error) => toast.error("Delete failed", { description: e.message }),
   });
+
+  const teamsFn = useServerFn(listTeams);
+  const shareFn = useServerFn(shareProjectWithTeam);
+  const teams = useQuery({ queryKey: ["teams"], queryFn: () => teamsFn() });
+  const shareMutation = useMutation({
+    mutationFn: async (teamId: string | null) => shareFn({ data: { id, teamId } }),
+    onSuccess: (_r, teamId) => {
+      toast.success(teamId ? "Shared with team" : "Sharing removed");
+      qc.invalidateQueries({ queryKey: ["saved_projects"] });
+    },
+    onError: (e: Error) => toast.error("Could not update sharing", { description: e.message }),
+  });
+
 
   async function handleExport(kind: "pdf" | "docx") {
     if (!p) return;
@@ -93,6 +108,28 @@ function ProjectDetail() {
               <Trash2 className="h-3.5 w-3.5" /> Delete
             </button>
           </div>
+
+          {(teams.data?.length ?? 0) > 0 && (
+            <div className="mt-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-4">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <label htmlFor="share-team" className="text-sm font-medium">Share with team</label>
+              <select
+                id="share-team"
+                value={p.team_id ?? ""}
+                disabled={shareMutation.isPending}
+                onChange={(e) => shareMutation.mutate(e.target.value || null)}
+                className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
+              >
+                <option value="">Private (only me)</option>
+                {teams.data?.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+              {shareMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+            </div>
+          )}
+
+
 
           <section className="mt-6 rounded-2xl border border-border bg-card p-5">
             <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">Prompt</h2>

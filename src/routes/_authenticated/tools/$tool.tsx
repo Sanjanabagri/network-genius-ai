@@ -150,10 +150,14 @@ export const Route = createFileRoute("/_authenticated/tools/$tool")({
       ],
     };
   },
+  validateSearch: (search: Record<string, unknown>): { prompt?: string } => ({
+    prompt: typeof search.prompt === "string" ? search.prompt.slice(0, 20000) : undefined,
+  }),
   loader: ({ params }) => {
     if (!(params.tool in TOOLS)) throw notFound();
     return { tool: TOOLS[params.tool as ToolId] };
   },
+
   notFoundComponent: () => (
     <main className="mx-auto max-w-3xl px-6 py-24 text-center">
       <h1 className="font-display text-3xl font-bold">Tool not found</h1>
@@ -188,7 +192,9 @@ function ToolPage() {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [prompt, setPrompt] = useState("");
+  const search = Route.useSearch();
+  const [prompt, setPrompt] = useState<string>(search.prompt ?? "");
+
   const [output, setOutput] = useState("");
   const [exporting, setExporting] = useState<null | "pdf" | "docx">(null);
   const [savedId, setSavedId] = useState<string | null>(null);
