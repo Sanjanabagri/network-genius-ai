@@ -109,6 +109,28 @@ function ProjectDetail() {
             </button>
           </div>
 
+          {(teams.data?.length ?? 0) > 0 && (
+            <div className="mt-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-4">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <label htmlFor="share-team" className="text-sm font-medium">Share with team</label>
+              <select
+                id="share-team"
+                value={p.team_id ?? ""}
+                disabled={shareMutation.isPending}
+                onChange={(e) => shareMutation.mutate(e.target.value || null)}
+                className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
+              >
+                <option value="">Private (only me)</option>
+                {teams.data?.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+              {shareMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+            </div>
+          )}
+
+
+
           <section className="mt-6 rounded-2xl border border-border bg-card p-5">
             <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">Prompt</h2>
             <pre className="mt-2 whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-foreground">{p.prompt}</pre>
