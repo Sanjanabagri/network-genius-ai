@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect, Link, useRouter } from "@tanstack/react-router";
-import { FolderOpen, LogOut, Network, Settings, Shield } from "lucide-react";
+import { FolderOpen, GraduationCap, LayoutDashboard, LogOut, Network, Settings, Shield, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
