@@ -42,6 +42,19 @@ function ProjectDetail() {
     onError: (e: Error) => toast.error("Delete failed", { description: e.message }),
   });
 
+  const teamsFn = useServerFn(listTeams);
+  const shareFn = useServerFn(shareProjectWithTeam);
+  const teams = useQuery({ queryKey: ["teams"], queryFn: () => teamsFn() });
+  const shareMutation = useMutation({
+    mutationFn: async (teamId: string | null) => shareFn({ data: { id, teamId } }),
+    onSuccess: (_r, teamId) => {
+      toast.success(teamId ? "Shared with team" : "Sharing removed");
+      qc.invalidateQueries({ queryKey: ["saved_projects"] });
+    },
+    onError: (e: Error) => toast.error("Could not update sharing", { description: e.message }),
+  });
+
+
   async function handleExport(kind: "pdf" | "docx") {
     if (!p) return;
     setExporting(kind);
