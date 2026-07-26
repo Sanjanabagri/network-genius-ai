@@ -37,6 +37,20 @@ function Dashboard() {
   const { user } = Route.useRouteContext();
   const name = (user.user_metadata?.full_name as string | undefined) ?? user.email?.split("@")[0] ?? "engineer";
 
+  const projectsFn = useServerFn(listProjects);
+  const teamsFn = useServerFn(listTeams);
+  const projects = useQuery({ queryKey: ["saved_projects"], queryFn: () => projectsFn() });
+  const teams = useQuery({ queryKey: ["teams"], queryFn: () => teamsFn() });
+
+  const rows = projects.data ?? [];
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const todayCount = rows.filter((p) => new Date(p.created_at) >= startOfToday).length;
+  const configCount = rows.filter((p) => p.tool === "config" || p.tool === "multi-vendor").length;
+  const scriptCount = rows.filter((p) => p.tool === "script" || p.tool === "automation-studio").length;
+  const loadingStats = projects.isLoading;
+  const num = (n: number) => (loadingStats ? "—" : String(n));
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="animate-fade-up">
@@ -49,10 +63,10 @@ function Dashboard() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: "AI requests today", value: "0", sub: "of 10 free", to: null as string | null },
-          { label: "Configurations", value: "0", sub: "all-time", to: null },
-          { label: "Scripts generated", value: "0", sub: "all-time", to: null },
-          { label: "Saved projects", value: "—", sub: "view history", to: "/projects" },
+          { label: "Generations today", value: num(todayCount), sub: "saved in the last 24h", to: "/projects" as string | null },
+          { label: "Configurations", value: num(configCount), sub: "all-time", to: "/projects" },
+          { label: "Scripts generated", value: num(scriptCount), sub: "all-time", to: "/projects" },
+          { label: "Teams", value: teams.isLoading ? "—" : String(teams.data?.length ?? 0), sub: "collaborate", to: "/teams" },
         ].map((s) => {
           const inner = (
             <>
@@ -70,6 +84,28 @@ function Dashboard() {
           );
         })}
       </div>
+
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <Link to="/teams" className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:shadow-elevated">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+            <Users className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="font-display text-base font-semibold">Teams &amp; collaboration</div>
+            <div className="text-sm text-muted-foreground">Invite engineers, assign roles, share projects.</div>
+          </div>
+        </Link>
+        <Link to="/learn" className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:shadow-elevated">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent/20 text-accent">
+            <GraduationCap className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="font-display text-base font-semibold">Learning Center</div>
+            <div className="text-sm text-muted-foreground">Guided paths with prompts pre-loaded into the tools.</div>
+          </div>
+        </Link>
+      </div>
+
 
       <div className="mt-10">
         <h2 className="font-display text-xl font-semibold">Modules</h2>
