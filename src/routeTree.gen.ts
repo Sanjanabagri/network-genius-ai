@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
+import { Route as AuthenticatedLearnRouteImport } from './routes/_authenticated/learn'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedTeamsIndexRouteImport } from './routes/_authenticated/teams.index'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
@@ -51,6 +52,11 @@ const AuthForgotRoute = AuthForgotRouteImport.update({
   id: '/forgot',
   path: '/forgot',
   getParentRoute: () => AuthRoute,
+} as any)
+const AuthenticatedLearnRoute = AuthenticatedLearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/reset-password'
     | '/dashboard'
+    | '/learn'
     | '/auth/forgot'
     | '/projects/$id'
     | '/settings/security'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/reset-password'
     | '/dashboard'
+    | '/learn'
     | '/auth/forgot'
     | '/projects/$id'
     | '/settings/security'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/reset-password'
     | '/_authenticated/dashboard'
+    | '/_authenticated/learn'
     | '/auth/forgot'
     | '/_authenticated/projects/$id'
     | '/_authenticated/settings/security'
@@ -232,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_authenticated/learn': {
+      id: '/_authenticated/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof AuthenticatedLearnRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -286,6 +305,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedLearnRoute: typeof AuthenticatedLearnRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
   AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
   AuthenticatedTeamsIdRoute: typeof AuthenticatedTeamsIdRoute
@@ -296,6 +316,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedLearnRoute: AuthenticatedLearnRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
   AuthenticatedSettingsSecurityRoute: AuthenticatedSettingsSecurityRoute,
   AuthenticatedTeamsIdRoute: AuthenticatedTeamsIdRoute,
