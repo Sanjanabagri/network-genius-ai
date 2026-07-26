@@ -47,7 +47,9 @@ export const saveProject = createServerFn({ method: "POST" })
         language: data.language ?? null,
         prompt: data.prompt,
         output: data.output,
+        team_id: data.teamId ?? null,
       })
+
       .select()
       .single();
     if (error) throw new Error(error.message);
