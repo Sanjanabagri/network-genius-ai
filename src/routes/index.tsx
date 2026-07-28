@@ -8,8 +8,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "NetAssist AI — Automate. Troubleshoot. Accelerate." },
       { name: "description", content: "The AI copilot for Network, NOC, Security, and SD-WAN engineers. Sign in to start automating." },
-      { property: "og:title", content: "NetAssist AI" },
-      { property: "og:description", content: "The AI copilot for network engineers." },
+      { property: "og:title", content: "NetAssist AI — Automate. Troubleshoot. Accelerate." },
+      { property: "og:description", content: "The AI copilot for Network, NOC, Security, and SD-WAN engineers. Sign in to start automating." },
     ],
   }),
   component: Splash,
