@@ -179,7 +179,8 @@ export const Route = createFileRoute("/_authenticated/tools/$tool")({
 });
 
 function ToolPage() {
-  const { tool } = Route.useLoaderData();
+  const params = Route.useParams();
+  const tool = TOOLS[params.tool as ToolId];
   const navigate = useNavigate();
   const run = useServerFn(runAiTask);
   const save = useServerFn(saveProject);
