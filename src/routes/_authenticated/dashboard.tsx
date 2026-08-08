@@ -5,6 +5,8 @@ import { Activity, FileCode2, FileText, GitBranch, GraduationCap, Layers, Messag
 import type { ToolId } from "@/lib/ai.functions";
 import { listProjects } from "@/lib/saved-projects.functions";
 import { listTeams } from "@/lib/teams.functions";
+import { OnboardingWalkthrough } from "@/components/OnboardingWalkthrough";
+
 
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
