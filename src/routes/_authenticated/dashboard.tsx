@@ -61,7 +61,10 @@ function Dashboard() {
         <p className="mt-2 text-muted-foreground">Your AI copilot is ready. Pick a module to get started.</p>
       </div>
 
+      <OnboardingWalkthrough />
+
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
         {[
           { label: "Generations today", value: num(todayCount), sub: "saved in the last 24h", to: "/projects" as string | null },
           { label: "Configurations", value: num(configCount), sub: "all-time", to: "/projects" },
