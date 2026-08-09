@@ -137,7 +137,18 @@ function AuthedLayout() {
                   <GraduationCap className="text-muted-foreground" /> Learning Center
                 </Link>
               </DropdownMenuItem>
+              {adminData?.isAdmin ? (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className={menuLinkClass}>
+                      <BarChart3 className="text-muted-foreground" /> Admin panel
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              ) : null}
               <DropdownMenuSeparator />
+
               <DropdownMenuItem
                 onSelect={() => void signOut()}
                 disabled={signingOut}
