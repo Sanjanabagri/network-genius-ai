@@ -45,6 +45,14 @@ function AuthedLayout() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const [signingOut, setSigningOut] = useState(false);
+  useActivityTracking();
+  const fetchIsAdmin = useServerFn(checkIsAdmin);
+  const { data: adminData } = useQuery({
+    queryKey: ["is-admin"],
+    queryFn: () => fetchIsAdmin({ data: undefined }),
+    staleTime: 300000,
+  });
+
 
   async function signOut() {
     if (signingOut) return;
