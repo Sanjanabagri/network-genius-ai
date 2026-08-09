@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect, Link, useRouter } from "@tanstack/react-router";
 import {
+  BarChart3,
   ChevronDown,
   FolderOpen,
   GraduationCap,
@@ -11,7 +12,8 @@ import {
   Users,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -22,6 +24,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useActivityTracking } from "@/hooks/use-activity-tracking";
+import { checkIsAdmin } from "@/lib/analytics.functions";
+
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
