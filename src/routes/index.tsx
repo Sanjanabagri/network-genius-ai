@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowRight, Network, Shield, Sparkles } from "lucide-react";
@@ -28,6 +29,9 @@ function Splash() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      <div className="absolute right-4 top-4 z-50">
+        <ThemeToggle />
+      </div>
       <div className="pointer-events-none absolute inset-0 bg-gradient-hero opacity-40" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-mesh opacity-60" />
 

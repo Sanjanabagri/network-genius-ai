@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useActivityTracking } from "@/hooks/use-activity-tracking";
 import { checkIsAdmin } from "@/lib/analytics.functions";
 
@@ -91,6 +92,8 @@ function AuthedLayout() {
             </span>
           </Link>
 
+          <div className="flex items-center gap-2">
+          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -163,6 +166,7 @@ function AuthedLayout() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
         </div>
       </header>
       <Outlet />

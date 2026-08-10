@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -38,6 +39,9 @@ function AuthPage() {
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
+      <div className="absolute right-4 top-4 z-50">
+        <ThemeToggle />
+      </div>
       <div className="pointer-events-none absolute inset-0 bg-gradient-mesh opacity-60" />
       <div className="relative mx-auto grid min-h-screen max-w-7xl grid-cols-1 lg:grid-cols-2">
         {/* Left · form */}
