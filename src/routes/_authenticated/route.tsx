@@ -48,10 +48,15 @@ function AuthedLayout() {
   useActivityTracking();
   const fetchIsAdmin = useServerFn(checkIsAdmin);
   const { data: adminData } = useQuery({
-    queryKey: ["is-admin"],
-    queryFn: () => fetchIsAdmin({ data: undefined }),
+    queryKey: ["is-admin", user.id],
+    // The session can disappear mid-flight (sign-out); never let a 401 bubble up.
+    queryFn: () =>
+      fetchIsAdmin({ data: undefined }).catch(() => ({ isAdmin: false })),
+    enabled: !signingOut,
+    retry: false,
     staleTime: 300000,
   });
+
 
 
   async function signOut() {
