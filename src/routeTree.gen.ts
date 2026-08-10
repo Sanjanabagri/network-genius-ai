@@ -14,6 +14,7 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthOtpRouteImport } from './routes/auth.otp'
 import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
 import { Route as AuthenticatedLearnRouteImport } from './routes/_authenticated/learn'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -49,6 +50,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthOtpRoute = AuthOtpRouteImport.update({
+  id: '/otp',
+  path: '/otp',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AuthForgotRoute = AuthForgotRouteImport.update({
   id: '/forgot',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
+  '/auth/otp': typeof AuthOtpRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
+  '/auth/otp': typeof AuthOtpRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
+  '/auth/otp': typeof AuthOtpRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
   '/_authenticated/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/learn'
     | '/auth/forgot'
+    | '/auth/otp'
     | '/projects/$id'
     | '/settings/profile'
     | '/settings/security'
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/learn'
     | '/auth/forgot'
+    | '/auth/otp'
     | '/projects/$id'
     | '/settings/profile'
     | '/settings/security'
@@ -208,6 +219,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/learn'
     | '/auth/forgot'
+    | '/auth/otp'
     | '/_authenticated/projects/$id'
     | '/_authenticated/settings/profile'
     | '/_authenticated/settings/security'
@@ -261,6 +273,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/auth/otp': {
+      id: '/auth/otp'
+      path: '/otp'
+      fullPath: '/auth/otp'
+      preLoaderRoute: typeof AuthOtpRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/auth/forgot': {
       id: '/auth/forgot'
@@ -373,10 +392,12 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface AuthRouteChildren {
   AuthForgotRoute: typeof AuthForgotRoute
+  AuthOtpRoute: typeof AuthOtpRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthForgotRoute: AuthForgotRoute,
+  AuthOtpRoute: AuthOtpRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -391,13 +412,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
