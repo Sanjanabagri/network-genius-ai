@@ -165,6 +165,7 @@ function AuthedLayout() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
         </div>
       </header>
       <Outlet />
