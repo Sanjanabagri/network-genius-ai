@@ -4,53 +4,53 @@ import { ArrowLeft, KeyRound, Loader2, Mail, Network } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/auth/forgot")({
+export const Route = createFileRoute("/auth/otp")({
   head: () => ({
     meta: [
-      { title: "Forgot password · NetAssist AI" },
-      { name: "description", content: "Reset your NetAssist AI password with an emailed link or one-time code." },
-      { property: "og:title", content: "Forgot password · NetAssist AI" },
-      { property: "og:description", content: "Reset your NetAssist AI password with an emailed link or one-time code." },
+      { title: "Sign in with a code · NetAssist AI" },
+      { name: "description", content: "Sign in to NetAssist AI with a one-time passcode sent to your email." },
+      { property: "og:title", content: "Sign in with a code · NetAssist AI" },
+      { property: "og:description", content: "Sign in to NetAssist AI with a one-time passcode sent to your email." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: ForgotPage,
+  component: OtpPage,
 });
 
-function ForgotPage() {
+function OtpPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"email" | "code">("email");
 
-  async function sendEmail(e?: React.FormEvent) {
+  async function sendCode(e?: React.FormEvent) {
     e?.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false, emailRedirectTo: window.location.origin },
     });
     setLoading(false);
     if (error) {
-      toast.error("Could not send reset email", { description: error.message });
+      toast.error("Could not send code", { description: error.message });
       return;
     }
     setStep("code");
-    toast.success("Reset email sent", { description: "Use the link or the 6-digit code in the email." });
+    toast.success("Code sent", { description: `Check ${email} for your 6-digit code.` });
   }
 
-  async function verifyCode(e: React.FormEvent) {
+  async function verify(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "recovery" });
+    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
     setLoading(false);
     if (error) {
       toast.error("Invalid or expired code", { description: error.message });
       return;
     }
-    toast.success("Verified — set your new password");
-    navigate({ to: "/reset-password", replace: true });
+    navigate({ to: "/dashboard", replace: true });
   }
 
   return (
@@ -69,11 +69,11 @@ function ForgotPage() {
         <div className="animate-fade-up rounded-2xl border border-border bg-card p-8 shadow-elevated">
           {step === "email" ? (
             <>
-              <h1 className="font-display text-2xl font-bold tracking-tight">Reset your password</h1>
+              <h1 className="font-display text-2xl font-bold tracking-tight">Sign in with a code</h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Enter your account email. We'll send a secure reset link and a one-time verification code.
+                No password needed — we'll email you a one-time passcode.
               </p>
-              <form onSubmit={sendEmail} className="mt-6 space-y-4">
+              <form onSubmit={sendCode} className="mt-6 space-y-4">
                 <label className="block">
                   <span className="mb-1.5 block text-xs font-medium text-muted-foreground">Email</span>
                   <div className="relative">
@@ -93,7 +93,7 @@ function ForgotPage() {
                   disabled={loading}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-elevated disabled:opacity-60"
                 >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send reset code"}
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Email me a code"}
                 </button>
               </form>
             </>
@@ -102,37 +102,34 @@ function ForgotPage() {
               <div className="flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/10 p-4">
                 <KeyRound className="h-5 w-5 text-accent" />
                 <div className="text-sm">
-                  <div className="font-semibold text-foreground">Check your inbox</div>
+                  <div className="font-semibold text-foreground">Enter your code</div>
                   <div className="text-muted-foreground">
-                    We emailed <span className="font-medium text-foreground">{email}</span> a reset link and a 6-digit code.
+                    Sent to <span className="font-medium text-foreground">{email}</span>. It expires in a few minutes.
                   </div>
                 </div>
               </div>
-              <form onSubmit={verifyCode} className="mt-6 space-y-4">
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-medium text-muted-foreground">Verification code</span>
-                  <input
-                    autoFocus
-                    inputMode="numeric"
-                    maxLength={6}
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    placeholder="000000"
-                    className="w-full rounded-xl border border-input bg-background px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
-                  />
-                </label>
+              <form onSubmit={verify} className="mt-6 space-y-4">
+                <input
+                  autoFocus
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="000000"
+                  className="w-full rounded-xl border border-input bg-background px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
+                />
                 <button
                   type="submit"
                   disabled={loading || code.length !== 6}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-elevated disabled:opacity-60"
                 >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify code"}
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify & sign in"}
                 </button>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <button type="button" onClick={() => setStep("email")} className="hover:text-foreground">
                     Use a different email
                   </button>
-                  <button type="button" disabled={loading} onClick={() => sendEmail()} className="hover:text-foreground disabled:opacity-60">
+                  <button type="button" disabled={loading} onClick={() => sendCode()} className="hover:text-foreground disabled:opacity-60">
                     Resend code
                   </button>
                 </div>

@@ -281,11 +281,15 @@ function SignInForm({ redirect }: { redirect?: string }) {
             </button>
           }
         />
-        <div className="mt-2 text-right">
+        <div className="mt-2 flex items-center justify-between">
+          <Link to="/auth/otp" className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+            Sign in with a code
+          </Link>
           <Link to="/auth/forgot" className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
             Forgot password?
           </Link>
         </div>
+
       </div>
       <button
         type="submit"
