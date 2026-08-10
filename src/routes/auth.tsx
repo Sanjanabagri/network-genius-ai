@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";

@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowRight, Network, Shield, Sparkles } from "lucide-react";
