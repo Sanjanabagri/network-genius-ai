@@ -31,6 +31,10 @@ export type AdminStats = {
   topPages: { path: string; views: number }[];
   topUsers: { user_id: string; name: string; logins: number; views: number; last_seen: string }[];
   recent: (AppEvent & { name: string })[];
+  /** All events in range (capped), used for drilldowns. */
+  events: (AppEvent & { name: string })[];
+  /** Every registered user with their activity in range. */
+  users: { user_id: string; name: string; logins: number; views: number; last_seen: string | null }[];
 };
 
 export const trackEvent = createServerFn({ method: "POST" })
