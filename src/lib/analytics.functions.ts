@@ -159,6 +159,13 @@ export const getAdminStats = createServerFn({ method: "GET" })
       }
     }
 
+    const withNames = rows.map((r) => ({
+      ...r,
+      name: (r.user_id && names.get(r.user_id)) || (r.user_id ? r.user_id.slice(0, 8) : "unknown"),
+    }));
+
+
+
     return {
       isAdmin: true,
       totalUsers: userCount ?? 0,
