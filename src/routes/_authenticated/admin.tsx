@@ -1,8 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
 import { Activity, Eye, LogIn, ShieldAlert, Users } from "lucide-react";
 import { getAdminStats } from "@/lib/analytics.functions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPanel,
@@ -18,17 +26,47 @@ export const Route = createFileRoute("/_authenticated/admin")({
   }),
 });
 
-function Stat({ icon: Icon, label, value, sub }: { icon: typeof Users; label: string; value: number | string; sub?: string }) {
+function Stat({
+  icon: Icon,
+  label,
+  value,
+  sub,
+  onClick,
+  onSubClick,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: number | string;
+  sub?: string;
+  onClick?: () => void;
+  onSubClick?: () => void;
+}) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-xl border border-border bg-card p-4 text-left transition hover:border-primary/50 hover:bg-muted/40"
+    >
       <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
         <Icon className="h-4 w-4" /> {label}
       </div>
       <div className="mt-2 font-display text-2xl font-bold">{value}</div>
-      {sub ? <div className="mt-1 text-xs text-muted-foreground">{sub}</div> : null}
-    </div>
+      {sub ? (
+        <div
+          className={`mt-1 text-xs ${onSubClick ? "text-primary hover:underline" : "text-muted-foreground"}`}
+          onClick={(e) => {
+            if (!onSubClick) return;
+            e.stopPropagation();
+            onSubClick();
+          }}
+        >
+          {sub}
+        </div>
+      ) : null}
+    </button>
   );
 }
+
 
 function AdminPanel() {
   const fetchStats = useServerFn(getAdminStats);
