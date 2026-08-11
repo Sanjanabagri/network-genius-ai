@@ -1,8 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
 import { Activity, Eye, LogIn, ShieldAlert, Users } from "lucide-react";
 import { getAdminStats } from "@/lib/analytics.functions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPanel,
@@ -18,25 +26,61 @@ export const Route = createFileRoute("/_authenticated/admin")({
   }),
 });
 
-function Stat({ icon: Icon, label, value, sub }: { icon: typeof Users; label: string; value: number | string; sub?: string }) {
+function Stat({
+  icon: Icon,
+  label,
+  value,
+  sub,
+  onClick,
+  onSubClick,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: number | string;
+  sub?: string;
+  onClick?: () => void;
+  onSubClick?: () => void;
+}) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-xl border border-border bg-card p-4 text-left transition hover:border-primary/50 hover:bg-muted/40"
+    >
       <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
         <Icon className="h-4 w-4" /> {label}
       </div>
       <div className="mt-2 font-display text-2xl font-bold">{value}</div>
-      {sub ? <div className="mt-1 text-xs text-muted-foreground">{sub}</div> : null}
-    </div>
+      {sub ? (
+        <div
+          className={`mt-1 text-xs ${onSubClick ? "text-primary hover:underline" : "text-muted-foreground"}`}
+          onClick={(e) => {
+            if (!onSubClick) return;
+            e.stopPropagation();
+            onSubClick();
+          }}
+        >
+          {sub}
+        </div>
+      ) : null}
+    </button>
   );
 }
 
+
+type Drill =
+  | { title: string; kind: "events"; events: { id: string; name: string; event_type: string; path: string | null; created_at: string }[] }
+  | { title: string; kind: "users"; users: { user_id: string; name: string; logins: number; views: number; last_seen: string | null }[] };
+
 function AdminPanel() {
   const fetchStats = useServerFn(getAdminStats);
+  const [drill, setDrill] = useState<Drill | null>(null);
   const { data, isLoading } = useQuery({
     queryKey: ["admin-stats", 30],
     queryFn: () => fetchStats({ data: { days: 30 } }),
     refetchInterval: 60000,
   });
+
 
   if (isLoading) {
     return <div className="mx-auto max-w-7xl px-4 py-10 text-sm text-muted-foreground sm:px-6">Loading analytics…</div>;
@@ -58,20 +102,55 @@ function AdminPanel() {
   }
 
   const maxDay = Math.max(1, ...data.daily.map((d) => d.logins + d.views));
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const isToday = (iso: string) => new Date(iso) >= startOfToday;
+  const logins = data.events.filter((e) => e.event_type === "login");
+  const views = data.events.filter((e) => e.event_type !== "login");
+  const activeToday = data.users.filter((u) => u.last_seen && isToday(u.last_seen));
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6">
       <header>
         <h1 className="font-display text-2xl font-bold sm:text-3xl">Admin panel</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Usage analytics for the last 30 days. Auto-refreshes every minute.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Usage analytics for the last 30 days. Auto-refreshes every minute. Click any card for details.
+        </p>
       </header>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat icon={Users} label="Registered users" value={data.totalUsers} />
-        <Stat icon={Activity} label="Active users" value={data.activeUsersToday} sub={`${data.activeUsers7d} in last 7 days`} />
-        <Stat icon={LogIn} label="Logins" value={data.totalLogins} sub={`${data.loginsToday} today`} />
-        <Stat icon={Eye} label="Page views" value={data.totalViews} sub={`${data.viewsToday} today`} />
+        <Stat
+          icon={Users}
+          label="Registered users"
+          value={data.totalUsers}
+          onClick={() => setDrill({ title: "All registered users", kind: "users", users: data.users })}
+        />
+        <Stat
+          icon={Activity}
+          label="Active users"
+          value={data.activeUsersToday}
+          sub={`${data.activeUsers7d} in last 7 days`}
+          onClick={() => setDrill({ title: "Active users today", kind: "users", users: activeToday })}
+          onSubClick={() => setDrill({ title: "Users active in range", kind: "users", users: data.users.filter((u) => u.last_seen) })}
+        />
+        <Stat
+          icon={LogIn}
+          label="Logins"
+          value={data.totalLogins}
+          sub={`${data.loginsToday} today`}
+          onClick={() => setDrill({ title: "All logins (30 days)", kind: "events", events: logins })}
+          onSubClick={() => setDrill({ title: "Logins today", kind: "events", events: logins.filter((e) => isToday(e.created_at)) })}
+        />
+        <Stat
+          icon={Eye}
+          label="Page views"
+          value={data.totalViews}
+          sub={`${data.viewsToday} today`}
+          onClick={() => setDrill({ title: "All page views (30 days)", kind: "events", events: views })}
+          onSubClick={() => setDrill({ title: "Page views today", kind: "events", events: views.filter((e) => isToday(e.created_at)) })}
+        />
       </div>
+
 
       <section className="rounded-xl border border-border bg-card p-4">
         <h2 className="font-display text-sm font-semibold">Daily activity</h2>
@@ -146,6 +225,74 @@ function AdminPanel() {
           </table>
         </div>
       </section>
+
+      <Dialog open={drill !== null} onOpenChange={(open) => !open && setDrill(null)}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{drill?.title}</DialogTitle>
+            <DialogDescription>
+              {drill ? `${drill.kind === "events" ? drill.events.length : drill.users.length} record(s)` : ""}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-auto">
+            {drill?.kind === "events" ? (
+              <table className="w-full text-left text-sm">
+                <thead className="sticky top-0 bg-background text-xs text-muted-foreground">
+                  <tr>
+                    <th className="py-2 pr-4 font-medium">When</th>
+                    <th className="py-2 pr-4 font-medium">User</th>
+                    <th className="py-2 font-medium">Path</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {drill.events.length === 0 && (
+                    <tr>
+                      <td colSpan={3} className="py-4 text-muted-foreground">No records.</td>
+                    </tr>
+                  )}
+                  {drill.events.map((e) => (
+                    <tr key={e.id} className="border-t border-border/60">
+                      <td className="py-2 pr-4 text-xs text-muted-foreground">{new Date(e.created_at).toLocaleString()}</td>
+                      <td className="py-2 pr-4">{e.name}</td>
+                      <td className="py-2 font-mono text-xs">{e.path ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : null}
+            {drill?.kind === "users" ? (
+              <table className="w-full text-left text-sm">
+                <thead className="sticky top-0 bg-background text-xs text-muted-foreground">
+                  <tr>
+                    <th className="py-2 pr-4 font-medium">User</th>
+                    <th className="py-2 pr-4 font-medium">Logins</th>
+                    <th className="py-2 pr-4 font-medium">Views</th>
+                    <th className="py-2 font-medium">Last seen</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {drill.users.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="py-4 text-muted-foreground">No records.</td>
+                    </tr>
+                  )}
+                  {drill.users.map((u) => (
+                    <tr key={u.user_id} className="border-t border-border/60">
+                      <td className="py-2 pr-4">{u.name}</td>
+                      <td className="py-2 pr-4">{u.logins}</td>
+                      <td className="py-2 pr-4">{u.views}</td>
+                      <td className="py-2 text-xs text-muted-foreground">
+                        {u.last_seen ? new Date(u.last_seen).toLocaleString() : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : null}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
