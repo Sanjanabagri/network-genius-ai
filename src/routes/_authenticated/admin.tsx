@@ -225,6 +225,74 @@ function AdminPanel() {
           </table>
         </div>
       </section>
+
+      <Dialog open={drill !== null} onOpenChange={(open) => !open && setDrill(null)}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{drill?.title}</DialogTitle>
+            <DialogDescription>
+              {drill ? `${drill.kind === "events" ? drill.events.length : drill.users.length} record(s)` : ""}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-auto">
+            {drill?.kind === "events" ? (
+              <table className="w-full text-left text-sm">
+                <thead className="sticky top-0 bg-background text-xs text-muted-foreground">
+                  <tr>
+                    <th className="py-2 pr-4 font-medium">When</th>
+                    <th className="py-2 pr-4 font-medium">User</th>
+                    <th className="py-2 font-medium">Path</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {drill.events.length === 0 && (
+                    <tr>
+                      <td colSpan={3} className="py-4 text-muted-foreground">No records.</td>
+                    </tr>
+                  )}
+                  {drill.events.map((e) => (
+                    <tr key={e.id} className="border-t border-border/60">
+                      <td className="py-2 pr-4 text-xs text-muted-foreground">{new Date(e.created_at).toLocaleString()}</td>
+                      <td className="py-2 pr-4">{e.name}</td>
+                      <td className="py-2 font-mono text-xs">{e.path ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : null}
+            {drill?.kind === "users" ? (
+              <table className="w-full text-left text-sm">
+                <thead className="sticky top-0 bg-background text-xs text-muted-foreground">
+                  <tr>
+                    <th className="py-2 pr-4 font-medium">User</th>
+                    <th className="py-2 pr-4 font-medium">Logins</th>
+                    <th className="py-2 pr-4 font-medium">Views</th>
+                    <th className="py-2 font-medium">Last seen</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {drill.users.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="py-4 text-muted-foreground">No records.</td>
+                    </tr>
+                  )}
+                  {drill.users.map((u) => (
+                    <tr key={u.user_id} className="border-t border-border/60">
+                      <td className="py-2 pr-4">{u.name}</td>
+                      <td className="py-2 pr-4">{u.logins}</td>
+                      <td className="py-2 pr-4">{u.views}</td>
+                      <td className="py-2 text-xs text-muted-foreground">
+                        {u.last_seen ? new Date(u.last_seen).toLocaleString() : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : null}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
