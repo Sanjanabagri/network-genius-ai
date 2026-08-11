@@ -177,9 +177,19 @@ export const getAdminStats = createServerFn({ method: "GET" })
         .map(([user_id, v]) => ({ user_id, name: names.get(user_id) || user_id.slice(0, 8), ...v }))
         .sort((a, b) => b.views + b.logins - (a.views + a.logins))
         .slice(0, 10),
-      recent: rows.slice(0, 30).map((r) => ({
-        ...r,
-        name: (r.user_id && names.get(r.user_id)) || (r.user_id ? r.user_id.slice(0, 8) : "unknown"),
-      })),
+      recent: withNames.slice(0, 30),
+      events: withNames.slice(0, 2000),
+      users: [...names.entries()]
+        .map(([user_id, n]) => {
+          const v = byUser.get(user_id);
+          return {
+            user_id,
+            name: n || user_id.slice(0, 8),
+            logins: v?.logins ?? 0,
+            views: v?.views ?? 0,
+            last_seen: v?.last_seen ?? null,
+          };
+        })
+        .sort((a, b) => (b.last_seen ?? "").localeCompare(a.last_seen ?? "")),
     };
   });
