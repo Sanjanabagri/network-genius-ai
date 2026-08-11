@@ -92,6 +92,8 @@ export const getAdminStats = createServerFn({ method: "GET" })
       topPages: [],
       topUsers: [],
       recent: [],
+      events: [],
+      users: [],
     };
     if (!roleRow) return empty;
 
