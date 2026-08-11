@@ -102,20 +102,55 @@ function AdminPanel() {
   }
 
   const maxDay = Math.max(1, ...data.daily.map((d) => d.logins + d.views));
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const isToday = (iso: string) => new Date(iso) >= startOfToday;
+  const logins = data.events.filter((e) => e.event_type === "login");
+  const views = data.events.filter((e) => e.event_type !== "login");
+  const activeToday = data.users.filter((u) => u.last_seen && isToday(u.last_seen));
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6">
       <header>
         <h1 className="font-display text-2xl font-bold sm:text-3xl">Admin panel</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Usage analytics for the last 30 days. Auto-refreshes every minute.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Usage analytics for the last 30 days. Auto-refreshes every minute. Click any card for details.
+        </p>
       </header>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat icon={Users} label="Registered users" value={data.totalUsers} />
-        <Stat icon={Activity} label="Active users" value={data.activeUsersToday} sub={`${data.activeUsers7d} in last 7 days`} />
-        <Stat icon={LogIn} label="Logins" value={data.totalLogins} sub={`${data.loginsToday} today`} />
-        <Stat icon={Eye} label="Page views" value={data.totalViews} sub={`${data.viewsToday} today`} />
+        <Stat
+          icon={Users}
+          label="Registered users"
+          value={data.totalUsers}
+          onClick={() => setDrill({ title: "All registered users", kind: "users", users: data.users })}
+        />
+        <Stat
+          icon={Activity}
+          label="Active users"
+          value={data.activeUsersToday}
+          sub={`${data.activeUsers7d} in last 7 days`}
+          onClick={() => setDrill({ title: "Active users today", kind: "users", users: activeToday })}
+          onSubClick={() => setDrill({ title: "Users active in range", kind: "users", users: data.users.filter((u) => u.last_seen) })}
+        />
+        <Stat
+          icon={LogIn}
+          label="Logins"
+          value={data.totalLogins}
+          sub={`${data.loginsToday} today`}
+          onClick={() => setDrill({ title: "All logins (30 days)", kind: "events", events: logins })}
+          onSubClick={() => setDrill({ title: "Logins today", kind: "events", events: logins.filter((e) => isToday(e.created_at)) })}
+        />
+        <Stat
+          icon={Eye}
+          label="Page views"
+          value={data.totalViews}
+          sub={`${data.viewsToday} today`}
+          onClick={() => setDrill({ title: "All page views (30 days)", kind: "events", events: views })}
+          onSubClick={() => setDrill({ title: "Page views today", kind: "events", events: views.filter((e) => isToday(e.created_at)) })}
+        />
       </div>
+
 
       <section className="rounded-xl border border-border bg-card p-4">
         <h2 className="font-display text-sm font-semibold">Daily activity</h2>
