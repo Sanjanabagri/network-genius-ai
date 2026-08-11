@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          details: string | null
+          id: string
+          status: string
+          target: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          status?: string
+          target?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          status?: string
+          target?: string | null
+        }
+        Relationships: []
+      }
+      ai_requests: {
+        Row: {
+          completion_tokens: number | null
+          created_at: string
+          duration_ms: number | null
+          error_message: string | null
+          id: string
+          language: string | null
+          prompt_tokens: number | null
+          status: string
+          tool: string
+          total_tokens: number | null
+          user_id: string | null
+          vendor: string | null
+        }
+        Insert: {
+          completion_tokens?: number | null
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          language?: string | null
+          prompt_tokens?: number | null
+          status?: string
+          tool: string
+          total_tokens?: number | null
+          user_id?: string | null
+          vendor?: string | null
+        }
+        Update: {
+          completion_tokens?: number | null
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          language?: string | null
+          prompt_tokens?: number | null
+          status?: string
+          tool?: string
+          total_tokens?: number | null
+          user_id?: string | null
+          vendor?: string | null
+        }
+        Relationships: []
+      }
       app_events: {
         Row: {
           created_at: string
