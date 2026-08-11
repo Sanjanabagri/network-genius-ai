@@ -72,9 +72,36 @@ type ContentBlock =
 export const runAiTask = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => InputSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const startedAt = Date.now();
+    const record = async (
+      status: "success" | "error",
+      extra: { error?: string; usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } },
+    ) => {
+      try {
+        await context.supabase.from("ai_requests").insert({
+          user_id: context.userId,
+          tool: data.tool,
+          vendor: data.vendor ?? (data.vendors?.length ? data.vendors.join(", ").slice(0, 200) : null),
+          language: data.language ?? null,
+          status,
+          error_message: extra.error ? extra.error.slice(0, 500) : null,
+          duration_ms: Date.now() - startedAt,
+          prompt_tokens: extra.usage?.prompt_tokens ?? null,
+          completion_tokens: extra.usage?.completion_tokens ?? null,
+          total_tokens: extra.usage?.total_tokens ?? null,
+        });
+      } catch {
+        // analytics must never break the user-facing AI call
+      }
+    };
+    const fail = async (message: string): Promise<never> => {
+      await record("error", { error: message });
+      throw new Error(message);
+    };
+
     const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("LOVABLE_API_KEY is not configured.");
+    if (!apiKey) await fail("LOVABLE_API_KEY is not configured.");
 
     const system = SYSTEMS[data.tool];
     const header = [
@@ -109,7 +136,7 @@ export const runAiTask = createServerFn({ method: "POST" })
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "Lovable-API-Key": apiKey,
+        "Lovable-API-Key": apiKey!,
       },
       body: JSON.stringify({
         model: "google/gemini-3.6-flash",
@@ -121,20 +148,23 @@ export const runAiTask = createServerFn({ method: "POST" })
     });
 
     if (res.status === 429) {
-      throw new Error("Rate limit reached. Please try again in a moment.");
+      await fail("Rate limit reached. Please try again in a moment.");
     }
     if (res.status === 402) {
-      throw new Error("AI credits exhausted. Please add credits to your workspace.");
+      await fail("AI credits exhausted. Please add credits to your workspace.");
     }
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      throw new Error(`AI gateway error (${res.status}): ${text.slice(0, 200)}`);
+      await fail(`AI gateway error (${res.status}): ${text.slice(0, 200)}`);
     }
 
     const json = (await res.json()) as {
       choices?: { message?: { content?: string } }[];
+      usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
     };
     const content = json.choices?.[0]?.message?.content ?? "";
-    if (!content) throw new Error("Empty response from AI.");
+    if (!content) await fail("Empty response from AI.");
+    await record("success", { usage: json.usage });
     return { content };
   });
+
