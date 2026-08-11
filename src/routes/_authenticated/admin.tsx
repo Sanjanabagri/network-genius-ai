@@ -68,13 +68,19 @@ function Stat({
 }
 
 
+type Drill =
+  | { title: string; kind: "events"; events: { id: string; name: string; event_type: string; path: string | null; created_at: string }[] }
+  | { title: string; kind: "users"; users: { user_id: string; name: string; logins: number; views: number; last_seen: string | null }[] };
+
 function AdminPanel() {
   const fetchStats = useServerFn(getAdminStats);
+  const [drill, setDrill] = useState<Drill | null>(null);
   const { data, isLoading } = useQuery({
     queryKey: ["admin-stats", 30],
     queryFn: () => fetchStats({ data: { days: 30 } }),
     refetchInterval: 60000,
   });
+
 
   if (isLoading) {
     return <div className="mx-auto max-w-7xl px-4 py-10 text-sm text-muted-foreground sm:px-6">Loading analytics…</div>;
