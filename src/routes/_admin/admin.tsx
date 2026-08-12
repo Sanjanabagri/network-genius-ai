@@ -49,7 +49,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export const Route = createFileRoute("/_authenticated/admin")({
+export const Route = createFileRoute("/_admin/admin")({
   component: AdminPanel,
   head: () => ({
     meta: [
