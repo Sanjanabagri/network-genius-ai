@@ -18,7 +18,7 @@ import { Route as AuthOtpRouteImport } from './routes/auth.otp'
 import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
 import { Route as AuthenticatedLearnRouteImport } from './routes/_authenticated/learn'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AdminAdminRouteImport } from './routes/_admin/admin'
 import { Route as AuthenticatedTeamsIndexRouteImport } from './routes/_authenticated/teams.index'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
 import { Route as AuthenticatedToolsToolRouteImport } from './routes/_authenticated/tools/$tool'
@@ -71,10 +71,10 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
+const AdminAdminRoute = AdminAdminRouteImport.update({
+  id: '/_admin/admin',
   path: '/admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedTeamsIndexRoute = AuthenticatedTeamsIndexRouteImport.update({
   id: '/teams/',
@@ -120,7 +120,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AdminAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
@@ -138,7 +138,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AdminAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
@@ -158,7 +158,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_admin/admin': typeof AdminAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/learn': typeof AuthenticatedLearnRoute
   '/auth/forgot': typeof AuthForgotRoute
@@ -215,7 +215,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/home'
     | '/reset-password'
-    | '/_authenticated/admin'
+    | '/_admin/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/learn'
     | '/auth/forgot'
@@ -235,6 +235,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   HomeRoute: typeof HomeRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  AdminAdminRoute: typeof AdminAdminRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -302,12 +303,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
+    '/_admin/admin': {
+      id: '/_admin/admin'
       path: '/admin'
       fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof AdminAdminRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/teams/': {
       id: '/_authenticated/teams/'
@@ -362,7 +363,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLearnRoute: typeof AuthenticatedLearnRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
@@ -375,7 +375,6 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLearnRoute: AuthenticatedLearnRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
@@ -408,6 +407,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   HomeRoute: HomeRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  AdminAdminRoute: AdminAdminRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
