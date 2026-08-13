@@ -209,6 +209,8 @@ export function SupportChat() {
 
   function resetChat() {
     stopSpeaking();
+    autoSpokenRef.current = false;
+    autoOpenRef.current = false;
     const fresh: ChatMessage[] = [{ id: newId(), role: "assistant", content: INTRO }];
     setMessages(fresh);
     setError(null);
