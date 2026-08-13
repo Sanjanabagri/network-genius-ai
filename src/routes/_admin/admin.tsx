@@ -11,6 +11,7 @@ import {
   FileClock,
   LayoutDashboard,
   LogIn,
+  MessageSquareHeart,
   ScrollText,
   ShieldAlert,
   Sparkles,
@@ -39,6 +40,7 @@ import {
   logAdminAction,
   type AdminUserRow,
 } from "@/lib/admin.functions";
+import { FeedbackSection } from "@/components/admin/FeedbackSection";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,7 +65,7 @@ export const Route = createFileRoute("/_admin/admin")({
   }),
 });
 
-type SectionId = "dashboard" | "users" | "features" | "ai" | "activity" | "saas" | "audit";
+type SectionId = "dashboard" | "users" | "features" | "ai" | "activity" | "saas" | "feedback" | "audit";
 
 const SECTIONS: { id: SectionId; label: string; icon: typeof Users }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -72,6 +74,7 @@ const SECTIONS: { id: SectionId; label: string; icon: typeof Users }[] = [
   { id: "ai", label: "AI Analytics", icon: Bot },
   { id: "activity", label: "Activity", icon: Activity },
   { id: "saas", label: "SaaS Metrics", icon: CreditCard },
+  { id: "feedback", label: "Feedback", icon: MessageSquareHeart },
   { id: "audit", label: "Audit Logs", icon: ScrollText },
 ];
 
@@ -238,6 +241,7 @@ function AdminPanel() {
         {section === "ai" ? <AiSection data={data} /> : null}
         {section === "activity" ? <ActivitySection data={data} /> : null}
         {section === "saas" ? <SaasSection data={data} /> : null}
+        {section === "feedback" ? <FeedbackSection /> : null}
         {section === "audit" ? <AuditSection /> : null}
         <ChartTooltipStyle />
       </div>

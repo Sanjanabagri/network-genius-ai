@@ -119,6 +119,48 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          admin_note: string | null
+          category: string
+          created_at: string
+          email: string | null
+          id: string
+          message: string
+          page: string | null
+          rating: number | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          category?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          message: string
+          page?: string | null
+          rating?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          category?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string
+          page?: string | null
+          rating?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

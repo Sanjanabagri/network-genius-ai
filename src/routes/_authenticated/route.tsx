@@ -6,6 +6,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   LogOut,
+  MessageSquareHeart,
   Network,
   Settings,
   Shield,
@@ -143,6 +144,11 @@ function AuthedLayout() {
               <DropdownMenuItem asChild>
                 <Link to="/learn" className={menuLinkClass}>
                   <GraduationCap className="text-muted-foreground" /> Learning Center
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/feedback" className={menuLinkClass}>
+                  <MessageSquareHeart className="text-muted-foreground" /> Send feedback
                 </Link>
               </DropdownMenuItem>
               {adminData?.isAdmin ? (
