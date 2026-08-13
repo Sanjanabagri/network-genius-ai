@@ -67,6 +67,8 @@ export function SupportChat() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const autoSpokenRef = useRef(false);
+  const autoOpenRef = useRef(false);
 
   // Hydrate persisted conversation + preferences, then auto-open with the intro.
   useEffect(() => {
