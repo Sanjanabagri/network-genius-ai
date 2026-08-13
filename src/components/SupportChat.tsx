@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Headphones, Loader2, Mic, MicOff, Send, Volume2, VolumeX, X, RotateCcw } from "lucide-react";
 import { askSupport } from "@/lib/support-chat.functions";
+import { supabase } from "@/integrations/supabase/client";
+
 
 type ChatMessage = { id: string; role: "user" | "assistant"; content: string };
 
