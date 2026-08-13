@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Headphones, Loader2, Mic, MicOff, Send, Volume2, VolumeX, X, RotateCcw } from "lucide-react";
 import { askSupport } from "@/lib/support-chat.functions";
+import { supabase } from "@/integrations/supabase/client";
+
 
 type ChatMessage = { id: string; role: "user" | "assistant"; content: string };
 
@@ -10,6 +12,9 @@ const VOICE_KEY = "na_support_voice_on";
 
 const INTRO =
   "Hi, I'm Neta — your NetAssist AI assistant. This app helps network engineers generate configs, troubleshoot issues, write automation scripts, MOPs, rollback plans and documentation, all powered by AI. Do you need help with anything?";
+
+const SIGNED_IN_GREETING =
+  "Welcome back! You're signed in. Want a hand generating a config, troubleshooting an issue, or finding a tool?";
 
 const QUICK_PROMPTS = [
   "What can this app do?",
@@ -86,7 +91,23 @@ export function SupportChat() {
     return () => window.clearTimeout(timer);
   }, []);
 
+  // Pop the assistant up whenever a user signs in.
   useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN") return;
+      setOpen(true);
+      setUnread(true);
+      setMessages((prev) =>
+        prev.length > 0 && prev[prev.length - 1]?.content === SIGNED_IN_GREETING
+          ? prev
+          : [...prev, { id: newId(), role: "assistant", content: SIGNED_IN_GREETING }],
+      );
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+
     if (messages.length === 0) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-40)));
