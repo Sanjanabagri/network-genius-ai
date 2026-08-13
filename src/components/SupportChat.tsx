@@ -63,6 +63,7 @@ export function SupportChat() {
   const [listening, setListening] = useState(false);
   const [micSupported, setMicSupported] = useState(false);
   const [unread, setUnread] = useState(false);
+  const [autoSpoken, setAutoSpoken] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
