@@ -86,7 +86,23 @@ export function SupportChat() {
     return () => window.clearTimeout(timer);
   }, []);
 
+  // Pop the assistant up whenever a user signs in.
   useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN") return;
+      setOpen(true);
+      setUnread(true);
+      setMessages((prev) =>
+        prev.length > 0 && prev[prev.length - 1]?.content === SIGNED_IN_GREETING
+          ? prev
+          : [...prev, { id: newId(), role: "assistant", content: SIGNED_IN_GREETING }],
+      );
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+
     if (messages.length === 0) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-40)));
