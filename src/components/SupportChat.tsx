@@ -98,6 +98,7 @@ export function SupportChat() {
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN") return;
+      autoOpenRef.current = true;
       setOpen(true);
       setUnread(true);
       setMessages((prev) =>
