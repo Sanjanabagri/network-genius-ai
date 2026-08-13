@@ -144,6 +144,17 @@ export function SupportChat() {
     if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
   }, []);
 
+  useEffect(() => {
+    if (!open || !autoOpenRef.current || autoSpokenRef.current) return;
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant") return;
+    if (last.content === INTRO || last.content === SIGNED_IN_GREETING) {
+      autoSpokenRef.current = true;
+      autoOpenRef.current = false;
+      speak(last.content);
+    }
+  }, [open, messages, speak]);
+
   const send = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
