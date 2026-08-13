@@ -87,6 +87,7 @@ export function SupportChat() {
     setMicSupported(!!getRecognition());
 
     const timer = window.setTimeout(() => {
+      autoOpenRef.current = true;
       setOpen(true);
       setUnread(true);
     }, 2000);
