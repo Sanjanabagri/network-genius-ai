@@ -67,6 +67,8 @@ export function SupportChat() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const autoSpokenRef = useRef(false);
+  const autoOpenRef = useRef(false);
 
   // Hydrate persisted conversation + preferences, then auto-open with the intro.
   useEffect(() => {
@@ -85,6 +87,7 @@ export function SupportChat() {
     setMicSupported(!!getRecognition());
 
     const timer = window.setTimeout(() => {
+      autoOpenRef.current = true;
       setOpen(true);
       setUnread(true);
     }, 2000);
@@ -95,6 +98,7 @@ export function SupportChat() {
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN") return;
+      autoOpenRef.current = true;
       setOpen(true);
       setUnread(true);
       setMessages((prev) =>
@@ -139,6 +143,17 @@ export function SupportChat() {
   const stopSpeaking = useCallback(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
   }, []);
+
+  useEffect(() => {
+    if (!open || !autoOpenRef.current || autoSpokenRef.current) return;
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant") return;
+    if (last.content === INTRO || last.content === SIGNED_IN_GREETING) {
+      autoSpokenRef.current = true;
+      autoOpenRef.current = false;
+      speak(last.content);
+    }
+  }, [open, messages, speak]);
 
   const send = useCallback(
     async (text: string) => {
@@ -194,6 +209,8 @@ export function SupportChat() {
 
   function resetChat() {
     stopSpeaking();
+    autoSpokenRef.current = false;
+    autoOpenRef.current = false;
     const fresh: ChatMessage[] = [{ id: newId(), role: "assistant", content: INTRO }];
     setMessages(fresh);
     setError(null);
