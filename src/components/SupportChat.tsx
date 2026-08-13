@@ -13,6 +13,9 @@ const VOICE_KEY = "na_support_voice_on";
 const INTRO =
   "Hi, I'm Neta — your NetAssist AI assistant. This app helps network engineers generate configs, troubleshoot issues, write automation scripts, MOPs, rollback plans and documentation, all powered by AI. Do you need help with anything?";
 
+const SIGNED_IN_GREETING =
+  "Welcome back! You're signed in. Want a hand generating a config, troubleshooting an issue, or finding a tool?";
+
 const QUICK_PROMPTS = [
   "What can this app do?",
   "How do I generate a config?",
