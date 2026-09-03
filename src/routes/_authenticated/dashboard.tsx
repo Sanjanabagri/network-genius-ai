@@ -146,6 +146,51 @@ function Dashboard() {
         </div>
       </div>
 
+      <section className="mt-10">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-display text-xl font-semibold">Recent activity</h2>
+          <Link to="/projects" className="text-sm font-medium text-primary hover:underline">
+            View all
+          </Link>
+        </div>
+        <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
+          {projects.isLoading ? (
+            <p className="px-5 py-6 text-sm text-muted-foreground">Loading your latest work…</p>
+          ) : rows.length === 0 ? (
+            <p className="px-5 py-6 text-sm text-muted-foreground">
+              No saved work yet — generate something with a module above and save it as a project.
+            </p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {rows.slice(0, 5).map((p) => (
+                <li key={p.id}>
+                  <Link
+                    to="/projects/$id"
+                    params={{ id: p.id }}
+                    className="flex items-center gap-3 px-5 py-3.5 transition hover:bg-muted/50"
+                  >
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+                      <FileText className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-medium">{p.title}</span>
+                      <span className="block truncate text-xs text-muted-foreground">
+                        {p.tool}
+                        {p.vendor ? ` · ${p.vendor}` : ""}
+                        {p.language ? ` · ${p.language}` : ""}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {new Date(p.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+
       <div className="mt-10 rounded-2xl border border-border bg-gradient-hero p-6 text-primary-foreground">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
