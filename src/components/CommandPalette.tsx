@@ -101,7 +101,7 @@ export function CommandPalette() {
         </kbd>
       </button>
 
-      <CommandDialog open={open} onOpenChange={setOpen} title="Command palette" description="Search tools, pages and saved projects">
+      <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Search tools, pages, saved projects…" />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
