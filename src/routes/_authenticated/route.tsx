@@ -94,6 +94,7 @@ function AuthedLayout() {
           </Link>
 
           <div className="flex items-center gap-2">
+          <CommandPalette />
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
