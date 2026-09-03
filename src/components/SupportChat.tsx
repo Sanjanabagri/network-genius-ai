@@ -70,7 +70,8 @@ export function SupportChat() {
   const autoSpokenRef = useRef(false);
   const autoOpenRef = useRef(false);
 
-  // Hydrate persisted conversation + preferences, then auto-open with the intro.
+  // Hydrate persisted conversation + preferences. The assistant only auto-opens
+  // after the user explicitly authenticates (see the auth listener below).
   useEffect(() => {
     let restored: ChatMessage[] = [];
     try {
@@ -85,13 +86,6 @@ export function SupportChat() {
     }
     setMessages(restored);
     setMicSupported(!!getRecognition());
-
-    const timer = window.setTimeout(() => {
-      autoOpenRef.current = true;
-      setOpen(true);
-      setUnread(true);
-    }, 2000);
-    return () => window.clearTimeout(timer);
   }, []);
 
   // Pop the assistant up whenever a user signs in.
