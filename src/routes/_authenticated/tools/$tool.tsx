@@ -520,6 +520,14 @@ function ToolPage() {
                   {savedId ? "Saved" : saveMutation.isPending ? "Saving…" : "Save as project"}
                 </button>
                 <button
+                  onClick={() => runValidation(output)}
+                  disabled={validating}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium hover:bg-muted disabled:opacity-60"
+                >
+                  {validating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
+                  {validating ? "Validating…" : "Validate"}
+                </button>
+                <button
                   onClick={() => {
                     navigator.clipboard.writeText(output);
                     toast.success("Copied to clipboard");
