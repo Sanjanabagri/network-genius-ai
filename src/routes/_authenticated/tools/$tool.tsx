@@ -610,7 +610,7 @@ function ToolPage() {
                         issue.severity === "error"
                           ? "border-destructive/30 bg-destructive/5 text-destructive"
                           : issue.severity === "warning"
-                            ? "border-amber-500/30 bg-amber-500/5 text-amber-600"
+                            ? "border-warning/30 bg-warning-muted text-warning-foreground"
                             : "border-border bg-muted/30 text-muted-foreground"
                       }`}
                     >
