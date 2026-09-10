@@ -573,6 +573,65 @@ function ToolPage() {
               </div>
             )}
           </div>
+
+          {validation && output && (
+            <div className="mt-4 rounded-xl border border-border bg-card p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`grid h-10 w-10 place-items-center rounded-full text-sm font-bold ${
+                      validation.valid
+                        ? validation.score >= 90
+                          ? "bg-emerald-500/15 text-emerald-500"
+                          : "bg-amber-500/15 text-amber-500"
+                        : "bg-destructive/15 text-destructive"
+                    }`}
+                  >
+                    {validation.score}
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold">
+                      {validation.valid ? "Validation passed" : "Validation failed"}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">{validation.summary}</p>
+                  </div>
+                </div>
+                <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
+                  {validation.checked}
+                </span>
+              </div>
+
+              {validation.issues.length > 0 && (
+                <ul className="mt-3 space-y-2">
+                  {validation.issues.map((issue, idx) => (
+                    <li
+                      key={idx}
+                      className={`rounded-lg border px-3 py-2 text-xs ${
+                        issue.severity === "error"
+                          ? "border-destructive/30 bg-destructive/5 text-destructive"
+                          : issue.severity === "warning"
+                            ? "border-amber-500/30 bg-amber-500/5 text-amber-600"
+                            : "border-border bg-muted/30 text-muted-foreground"
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <span className="mt-0.5 font-mono text-[10px] uppercase">
+                          {issue.severity}
+                        </span>
+                        <div className="flex-1">
+                          <p>{issue.message}</p>
+                          {issue.line && <p className="mt-0.5 text-[10px] opacity-80">Line {issue.line}</p>}
+                          {issue.suggestion && (
+                            <p className="mt-1 text-[10px] opacity-90">Tip: {issue.suggestion}</p>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </section>
       </div>
 
