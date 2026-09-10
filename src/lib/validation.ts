@@ -143,7 +143,7 @@ function ansibleChecks(_fullText: string, code: string): ValidationIssue[] {
 function terraformChecks(_fullText: string, code: string): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const open = (code.match(/\{/g) ?? []).length;
-  const close (code.match(/\}/g) ?? []).length;
+  const close = (code.match(/\}/g) ?? []).length;
   if (open !== close) {
     addIssue(issues, "error", `HCL brace mismatch: ${open} open, ${close} close.`, undefined, "Ensure every block has matching braces.");
   }
