@@ -200,6 +200,8 @@ function ToolPage() {
   const [output, setOutput] = useState("");
   const [exporting, setExporting] = useState<null | "pdf" | "docx">(null);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [validation, setValidation] = useState<ValidationResult | null>(null);
+  const [validating, setValidating] = useState(false);
 
   function toggleVendor(v: string) {
     setSelectedVendors((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
