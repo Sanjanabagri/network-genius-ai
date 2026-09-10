@@ -292,6 +292,21 @@ function ToolPage() {
     }
   }
 
+  function runValidation(content: string) {
+    setValidating(true);
+    try {
+      const result = validateOutput(
+        content,
+        tool.id,
+        tool.vendors ? vendor : undefined,
+        tool.languages ? language : undefined,
+      );
+      setValidation(result);
+    } finally {
+      setValidating(false);
+    }
+  }
+
 
   const mutation = useMutation({
     mutationFn: async () => {
