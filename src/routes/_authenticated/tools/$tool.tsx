@@ -324,7 +324,11 @@ function ToolPage() {
       });
       return r.content;
     },
-    onSuccess: (content) => { setOutput(content); setSavedId(null); },
+    onSuccess: (content) => {
+      setOutput(content);
+      setSavedId(null);
+      runValidation(content);
+    },
     onError: (e: Error) => toast.error("AI request failed", { description: e.message }),
   });
 
