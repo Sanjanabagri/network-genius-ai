@@ -582,8 +582,8 @@ function ToolPage() {
                     className={`grid h-10 w-10 place-items-center rounded-full text-sm font-bold ${
                       validation.valid
                         ? validation.score >= 90
-                          ? "bg-emerald-500/15 text-emerald-500"
-                          : "bg-amber-500/15 text-amber-500"
+                          ? "bg-success-muted text-success"
+                          : "bg-warning-muted text-warning"
                         : "bg-destructive/15 text-destructive"
                     }`}
                   >
