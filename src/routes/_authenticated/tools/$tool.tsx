@@ -4,12 +4,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import {
   Activity, ArrowLeft, Bot, Copy, FileCode2, FileDown, FileText, GitBranch,
-  Layers, Loader2, MessagesSquare, Paperclip, Save, Search, Sparkles, Terminal, Wand2, Workflow, X,
+  Layers, Loader2, MessagesSquare, Paperclip, Save, Search, ShieldCheck, Sparkles, Terminal, Wand2, Workflow, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { runAiTask, type ToolId } from "@/lib/ai.functions";
 import { exportAsPdf, exportAsDocx } from "@/lib/export-output";
 import { saveProject } from "@/lib/saved-projects.functions";
+import { validateOutput, type ValidationResult } from "@/lib/validation";
 
 type Attachment = { name: string; mime: string; dataUrl: string; size: number };
 
@@ -199,6 +200,8 @@ function ToolPage() {
   const [output, setOutput] = useState("");
   const [exporting, setExporting] = useState<null | "pdf" | "docx">(null);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [validation, setValidation] = useState<ValidationResult | null>(null);
+  const [validating, setValidating] = useState(false);
 
   function toggleVendor(v: string) {
     setSelectedVendors((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
@@ -289,6 +292,21 @@ function ToolPage() {
     }
   }
 
+  function runValidation(content: string) {
+    setValidating(true);
+    try {
+      const result = validateOutput(
+        content,
+        tool.id,
+        tool.vendors ? vendor : undefined,
+        tool.languages ? language : undefined,
+      );
+      setValidation(result);
+    } finally {
+      setValidating(false);
+    }
+  }
+
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -306,7 +324,11 @@ function ToolPage() {
       });
       return r.content;
     },
-    onSuccess: (content) => { setOutput(content); setSavedId(null); },
+    onSuccess: (content) => {
+      setOutput(content);
+      setSavedId(null);
+      runValidation(content);
+    },
     onError: (e: Error) => toast.error("AI request failed", { description: e.message }),
   });
 
@@ -498,6 +520,14 @@ function ToolPage() {
                   {savedId ? "Saved" : saveMutation.isPending ? "Saving…" : "Save as project"}
                 </button>
                 <button
+                  onClick={() => runValidation(output)}
+                  disabled={validating}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs font-medium hover:bg-muted disabled:opacity-60"
+                >
+                  {validating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
+                  {validating ? "Validating…" : "Validate"}
+                </button>
+                <button
                   onClick={() => {
                     navigator.clipboard.writeText(output);
                     toast.success("Copied to clipboard");
@@ -543,6 +573,65 @@ function ToolPage() {
               </div>
             )}
           </div>
+
+          {validation && output && (
+            <div className="mt-4 rounded-xl border border-border bg-card p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`grid h-10 w-10 place-items-center rounded-full text-sm font-bold ${
+                      validation.valid
+                        ? validation.score >= 90
+                          ? "bg-success-muted text-success"
+                          : "bg-warning-muted text-warning"
+                        : "bg-destructive/15 text-destructive"
+                    }`}
+                  >
+                    {validation.score}
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold">
+                      {validation.valid ? "Validation passed" : "Validation failed"}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">{validation.summary}</p>
+                  </div>
+                </div>
+                <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
+                  {validation.checked}
+                </span>
+              </div>
+
+              {validation.issues.length > 0 && (
+                <ul className="mt-3 space-y-2">
+                  {validation.issues.map((issue, idx) => (
+                    <li
+                      key={idx}
+                      className={`rounded-lg border px-3 py-2 text-xs ${
+                        issue.severity === "error"
+                          ? "border-destructive/30 bg-destructive/5 text-destructive"
+                          : issue.severity === "warning"
+                            ? "border-warning/30 bg-warning-muted text-warning-foreground"
+                            : "border-border bg-muted/30 text-muted-foreground"
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <span className="mt-0.5 font-mono text-[10px] uppercase">
+                          {issue.severity}
+                        </span>
+                        <div className="flex-1">
+                          <p>{issue.message}</p>
+                          {issue.line && <p className="mt-0.5 text-[10px] opacity-80">Line {issue.line}</p>}
+                          {issue.suggestion && (
+                            <p className="mt-1 text-[10px] opacity-90">Tip: {issue.suggestion}</p>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </section>
       </div>
 
