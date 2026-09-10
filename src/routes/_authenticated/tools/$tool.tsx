@@ -4,12 +4,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import {
   Activity, ArrowLeft, Bot, Copy, FileCode2, FileDown, FileText, GitBranch,
-  Layers, Loader2, MessagesSquare, Paperclip, Save, Search, Sparkles, Terminal, Wand2, Workflow, X,
+  Layers, Loader2, MessagesSquare, Paperclip, Save, Search, ShieldCheck, Sparkles, Terminal, Wand2, Workflow, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { runAiTask, type ToolId } from "@/lib/ai.functions";
 import { exportAsPdf, exportAsDocx } from "@/lib/export-output";
 import { saveProject } from "@/lib/saved-projects.functions";
+import { validateOutput, type ValidationResult } from "@/lib/validation";
 
 type Attachment = { name: string; mime: string; dataUrl: string; size: number };
 
