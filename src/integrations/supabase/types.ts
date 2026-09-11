@@ -247,6 +247,39 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          notes: string | null
+          plan: Database["public"]["Enums"]["plan_tier"]
+          seats: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          notes?: string | null
+          plan?: Database["public"]["Enums"]["plan_tier"]
+          seats?: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          notes?: string | null
+          plan?: Database["public"]["Enums"]["plan_tier"]
+          seats?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       team_invites: {
         Row: {
           accepted_at: string | null
@@ -371,6 +404,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      plan_tier: "free" | "pro" | "team"
       team_role: "owner" | "admin" | "member" | "viewer"
     }
     CompositeTypes: {
@@ -500,6 +534,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      plan_tier: ["free", "pro", "team"],
       team_role: ["owner", "admin", "member", "viewer"],
     },
   },
