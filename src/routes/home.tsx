@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { PLANS, PLAN_ORDER } from "@/lib/plans";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
