@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect, Link, useRouter, useLocation } from 
 import {
   BarChart3,
   ChevronDown,
+  CreditCard,
   FolderOpen,
   GraduationCap,
   LayoutDashboard,
@@ -49,6 +50,7 @@ const navItems = [
   { to: "/projects", label: "Saved projects", icon: FolderOpen },
   { to: "/teams", label: "Teams", icon: Users },
   { to: "/learn", label: "Learning Center", icon: GraduationCap },
+  { to: "/billing", label: "Billing & plans", icon: CreditCard },
   { to: "/feedback", label: "Send feedback", icon: MessageSquareHeart },
 ];
 
@@ -220,6 +222,11 @@ function AuthedLayout() {
                 <DropdownMenuItem asChild>
                   <Link to="/learn" className={menuLinkClass}>
                     <GraduationCap className="text-muted-foreground" /> Learning Center
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/billing" className={menuLinkClass}>
+                    <CreditCard className="text-muted-foreground" /> Billing &amp; plans
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
