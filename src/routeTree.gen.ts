@@ -20,6 +20,7 @@ import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
 import { Route as AuthenticatedLearnRouteImport } from './routes/_authenticated/learn'
 import { Route as AuthenticatedFeedbackRouteImport } from './routes/_authenticated/feedback'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated/billing'
 import { Route as AdminAdminRouteImport } from './routes/_admin/admin'
 import { Route as AuthenticatedTeamsIndexRouteImport } from './routes/_authenticated/teams.index'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
@@ -82,6 +83,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBillingRoute = AuthenticatedBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AdminAdminRoute = AdminAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AdminAdminRoute
+  '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/feedback': typeof AuthenticatedFeedbackRoute
   '/learn': typeof AuthenticatedLearnRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AdminAdminRoute
+  '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/feedback': typeof AuthenticatedFeedbackRoute
   '/learn': typeof AuthenticatedLearnRoute
@@ -173,6 +181,7 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_admin/admin': typeof AdminAdminRoute
+  '/_authenticated/billing': typeof AuthenticatedBillingRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/feedback': typeof AuthenticatedFeedbackRoute
   '/_authenticated/learn': typeof AuthenticatedLearnRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/reset-password'
     | '/admin'
+    | '/billing'
     | '/dashboard'
     | '/feedback'
     | '/learn'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/reset-password'
     | '/admin'
+    | '/billing'
     | '/dashboard'
     | '/feedback'
     | '/learn'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/reset-password'
     | '/_admin/admin'
+    | '/_authenticated/billing'
     | '/_authenticated/dashboard'
     | '/_authenticated/feedback'
     | '/_authenticated/learn'
@@ -336,6 +348,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/billing': {
+      id: '/_authenticated/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof AuthenticatedBillingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_admin/admin': {
       id: '/_admin/admin'
       path: '/admin'
@@ -408,6 +427,7 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedBillingRoute: typeof AuthenticatedBillingRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFeedbackRoute: typeof AuthenticatedFeedbackRoute
   AuthenticatedLearnRoute: typeof AuthenticatedLearnRoute
@@ -421,6 +441,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedBillingRoute: AuthenticatedBillingRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFeedbackRoute: AuthenticatedFeedbackRoute,
   AuthenticatedLearnRoute: AuthenticatedLearnRoute,

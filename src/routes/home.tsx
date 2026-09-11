@@ -457,26 +457,18 @@ function Testimonials() {
 
 /* ---------------- PRICING ---------------- */
 function Pricing() {
-  const plans = [
-    {
-      name: "Free", price: "$0", period: "forever",
-      desc: "For engineers exploring AI-assisted networking.",
-      features: ["10 AI requests / day", "Save up to 5 projects", "Basic config generation", "Community support"],
-      cta: "Start free", highlight: false,
-    },
-    {
-      name: "Pro", price: "$9", period: "/month",
-      desc: "For working professionals who ship every day.",
-      features: ["Unlimited AI requests", "Advanced troubleshooting", "Automation scripts", "PDF & DOCX export", "Priority support"],
-      cta: "Upgrade to Pro", highlight: true,
-    },
-    {
-      name: "Enterprise", price: "$49", period: "/month",
-      desc: "For teams standardizing network operations.",
-      features: ["Everything in Pro", "Team & workspace management", "SSO (SAML/OIDC)", "API access", "Audit logs & analytics"],
-      cta: "Contact sales", highlight: false,
-    },
-  ];
+  const plans = PLAN_ORDER.map((id) => {
+    const p = PLANS[id];
+    return {
+      name: p.name,
+      price: p.price,
+      period: p.period,
+      desc: p.desc,
+      features: p.features,
+      cta: id === "free" ? "Start free" : `Choose ${p.name}`,
+      highlight: Boolean(p.highlight),
+    };
+  });
   return (
     <section id="pricing" className="relative py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
