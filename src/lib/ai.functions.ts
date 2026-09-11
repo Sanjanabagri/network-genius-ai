@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { planOf } from "@/lib/plans";
 import { z } from "zod";
 
 const TOOL_IDS = [
@@ -99,6 +100,31 @@ export const runAiTask = createServerFn({ method: "POST" })
       await record("error", { error: message });
       throw new Error(message);
     };
+
+    // --- plan quota enforcement -------------------------------------------
+    {
+      const { data: sub } = await context.supabase
+        .from("subscriptions")
+        .select("plan")
+        .eq("user_id", context.userId)
+        .maybeSingle();
+      const limit = planOf(sub?.plan).dailyAiLimit;
+      if (limit !== null) {
+        const since = new Date();
+        since.setUTCHours(0, 0, 0, 0);
+        const { count } = await context.supabase
+          .from("ai_requests")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", context.userId)
+          .eq("status", "success")
+          .gte("created_at", since.toISOString());
+        if ((count ?? 0) >= limit) {
+          await fail(
+            `Daily limit reached: your Free plan allows ${limit} AI generations per day. Upgrade to Pro for unlimited generations.`,
+          );
+        }
+      }
+    }
 
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) await fail("LOVABLE_API_KEY is not configured.");

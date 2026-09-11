@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import { planOf } from "@/lib/plans";
 
 const TOOL_IDS = [
   "config", "troubleshoot", "script", "mop", "rollback", "cli", "docs", "incident", "workflow",
@@ -37,6 +38,25 @@ export const saveProject = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => SaveSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+
+    const { data: sub } = await supabase
+      .from("subscriptions")
+      .select("plan")
+      .eq("user_id", userId)
+      .maybeSingle();
+    const projectLimit = planOf(sub?.plan).projectLimit;
+    if (projectLimit !== null) {
+      const { count } = await supabase
+        .from("saved_projects")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId);
+      if ((count ?? 0) >= projectLimit) {
+        throw new Error(
+          `Your Free plan allows ${projectLimit} saved projects. Upgrade to Pro for unlimited projects.`,
+        );
+      }
+    }
+
     const { data: row, error } = await supabase
       .from("saved_projects")
       .insert({
