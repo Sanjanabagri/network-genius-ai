@@ -533,7 +533,7 @@ function FAQ() {
     { q: "Which vendors are supported?", a: "Cisco IOS/IOS-XE/NX-OS, Palo Alto (PAN-OS + Panorama), Fortinet FortiGate, Cisco SD-WAN (Viptela), and more added regularly." },
     { q: "Is my data private?", a: "Yes. Configs and CLI you paste are processed for your session only and never used to train models. Enterprise plans get isolated workspaces and audit logs." },
     { q: "Can I export configurations?", a: "Every output can be copied, downloaded, or exported to PDF/DOCX. Change management artifacts include rollback plans." },
-    { q: "Do you support SSO?", a: "SSO via SAML and OIDC is available on the Enterprise plan, along with role-based access control." },
+    { q: "What's included in the Team plan?", a: "Shared team workspaces, role-based access control, a team project library, usage analytics, and onboarding assistance." },
     { q: "How does the free tier work?", a: "10 AI requests per day and up to 5 saved projects. No credit card required." },
   ];
   const [open, setOpen] = useState<number | null>(0);
