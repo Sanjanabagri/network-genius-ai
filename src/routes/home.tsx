@@ -509,15 +509,16 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
-              <button
-                className={`mt-8 w-full rounded-xl px-5 py-3 text-sm font-semibold transition-all ${
+              <Link
+                to="/auth"
+                className={`mt-8 block w-full rounded-xl px-5 py-3 text-center text-sm font-semibold transition-all ${
                   p.highlight
                     ? "bg-background text-foreground hover:opacity-90"
                     : "bg-foreground text-background hover:opacity-90"
                 }`}
               >
                 {p.cta}
-              </button>
+              </Link>
             </div>
           ))}
         </div>
