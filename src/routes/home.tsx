@@ -509,15 +509,16 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
-              <button
-                className={`mt-8 w-full rounded-xl px-5 py-3 text-sm font-semibold transition-all ${
+              <Link
+                to="/auth"
+                className={`mt-8 block w-full rounded-xl px-5 py-3 text-center text-sm font-semibold transition-all ${
                   p.highlight
                     ? "bg-background text-foreground hover:opacity-90"
                     : "bg-foreground text-background hover:opacity-90"
                 }`}
               >
                 {p.cta}
-              </button>
+              </Link>
             </div>
           ))}
         </div>
@@ -530,9 +531,9 @@ function Pricing() {
 function FAQ() {
   const faqs = [
     { q: "Which vendors are supported?", a: "Cisco IOS/IOS-XE/NX-OS, Palo Alto (PAN-OS + Panorama), Fortinet FortiGate, Cisco SD-WAN (Viptela), and more added regularly." },
-    { q: "Is my data private?", a: "Yes. Configs and CLI you paste are processed for your session only and never used to train models. Enterprise plans get isolated workspaces and audit logs." },
+    { q: "Is my data private?", a: "Yes. Configs and CLI you paste are processed for your session only and never used to train models. Team plans get shared workspaces and usage analytics." },
     { q: "Can I export configurations?", a: "Every output can be copied, downloaded, or exported to PDF/DOCX. Change management artifacts include rollback plans." },
-    { q: "Do you support SSO?", a: "SSO via SAML and OIDC is available on the Enterprise plan, along with role-based access control." },
+    { q: "What's included in the Team plan?", a: "Shared team workspaces, role-based access control, a team project library, usage analytics, and onboarding assistance." },
     { q: "How does the free tier work?", a: "10 AI requests per day and up to 5 saved projects. No credit card required." },
   ];
   const [open, setOpen] = useState<number | null>(0);
