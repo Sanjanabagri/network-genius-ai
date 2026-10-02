@@ -189,7 +189,7 @@ export const Route = createFileRoute("/_authenticated/tools/$tool")({
   errorComponent: ({ error, reset }) => (
     <main className="mx-auto max-w-3xl px-6 py-24 text-center">
       <h1 className="font-display text-2xl font-bold">Something went wrong</h1>
-      <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{(error as Error).message}</p>
       <button onClick={reset} className="mt-6 rounded-lg bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
         Try again
       </button>
