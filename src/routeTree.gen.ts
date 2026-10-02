@@ -17,9 +17,12 @@ import { Route as AdminRouteRouteImport } from './routes/_admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthOtpRouteImport } from './routes/auth.otp'
 import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
+import { Route as AuthenticatedWorkflowsRouteImport } from './routes/_authenticated/workflows'
 import { Route as AuthenticatedLearnRouteImport } from './routes/_authenticated/learn'
 import { Route as AuthenticatedFeedbackRouteImport } from './routes/_authenticated/feedback'
+import { Route as AuthenticatedDevicesRouteImport } from './routes/_authenticated/devices'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedChangesRouteImport } from './routes/_authenticated/changes'
 import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated/billing'
 import { Route as AdminAdminRouteImport } from './routes/_admin/admin'
 import { Route as AuthenticatedTeamsIndexRouteImport } from './routes/_authenticated/teams.index'
@@ -68,6 +71,11 @@ const AuthForgotRoute = AuthForgotRouteImport.update({
   path: '/forgot',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthenticatedWorkflowsRoute = AuthenticatedWorkflowsRouteImport.update({
+  id: '/workflows',
+  path: '/workflows',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedLearnRoute = AuthenticatedLearnRouteImport.update({
   id: '/learn',
   path: '/learn',
@@ -78,9 +86,19 @@ const AuthenticatedFeedbackRoute = AuthenticatedFeedbackRouteImport.update({
   path: '/feedback',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDevicesRoute = AuthenticatedDevicesRouteImport.update({
+  id: '/devices',
+  path: '/devices',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedChangesRoute = AuthenticatedChangesRouteImport.update({
+  id: '/changes',
+  path: '/changes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedBillingRoute = AuthenticatedBillingRouteImport.update({
@@ -139,9 +157,12 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AdminAdminRoute
   '/billing': typeof AuthenticatedBillingRoute
+  '/changes': typeof AuthenticatedChangesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/devices': typeof AuthenticatedDevicesRoute
   '/feedback': typeof AuthenticatedFeedbackRoute
   '/learn': typeof AuthenticatedLearnRoute
+  '/workflows': typeof AuthenticatedWorkflowsRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
@@ -159,9 +180,12 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AdminAdminRoute
   '/billing': typeof AuthenticatedBillingRoute
+  '/changes': typeof AuthenticatedChangesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/devices': typeof AuthenticatedDevicesRoute
   '/feedback': typeof AuthenticatedFeedbackRoute
   '/learn': typeof AuthenticatedLearnRoute
+  '/workflows': typeof AuthenticatedWorkflowsRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
@@ -182,9 +206,12 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_admin/admin': typeof AdminAdminRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
+  '/_authenticated/changes': typeof AuthenticatedChangesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/devices': typeof AuthenticatedDevicesRoute
   '/_authenticated/feedback': typeof AuthenticatedFeedbackRoute
   '/_authenticated/learn': typeof AuthenticatedLearnRoute
+  '/_authenticated/workflows': typeof AuthenticatedWorkflowsRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
@@ -204,9 +231,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/admin'
     | '/billing'
+    | '/changes'
     | '/dashboard'
+    | '/devices'
     | '/feedback'
     | '/learn'
+    | '/workflows'
     | '/auth/forgot'
     | '/auth/otp'
     | '/projects/$id'
@@ -224,9 +254,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/admin'
     | '/billing'
+    | '/changes'
     | '/dashboard'
+    | '/devices'
     | '/feedback'
     | '/learn'
+    | '/workflows'
     | '/auth/forgot'
     | '/auth/otp'
     | '/projects/$id'
@@ -246,9 +279,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_admin/admin'
     | '/_authenticated/billing'
+    | '/_authenticated/changes'
     | '/_authenticated/dashboard'
+    | '/_authenticated/devices'
     | '/_authenticated/feedback'
     | '/_authenticated/learn'
+    | '/_authenticated/workflows'
     | '/auth/forgot'
     | '/auth/otp'
     | '/_authenticated/projects/$id'
@@ -327,6 +363,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_authenticated/workflows': {
+      id: '/_authenticated/workflows'
+      path: '/workflows'
+      fullPath: '/workflows'
+      preLoaderRoute: typeof AuthenticatedWorkflowsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/learn': {
       id: '/_authenticated/learn'
       path: '/learn'
@@ -341,11 +384,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFeedbackRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/devices': {
+      id: '/_authenticated/devices'
+      path: '/devices'
+      fullPath: '/devices'
+      preLoaderRoute: typeof AuthenticatedDevicesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/changes': {
+      id: '/_authenticated/changes'
+      path: '/changes'
+      fullPath: '/changes'
+      preLoaderRoute: typeof AuthenticatedChangesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/billing': {
@@ -428,9 +485,12 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBillingRoute: typeof AuthenticatedBillingRoute
+  AuthenticatedChangesRoute: typeof AuthenticatedChangesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDevicesRoute: typeof AuthenticatedDevicesRoute
   AuthenticatedFeedbackRoute: typeof AuthenticatedFeedbackRoute
   AuthenticatedLearnRoute: typeof AuthenticatedLearnRoute
+  AuthenticatedWorkflowsRoute: typeof AuthenticatedWorkflowsRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
   AuthenticatedSettingsProfileRoute: typeof AuthenticatedSettingsProfileRoute
   AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
@@ -442,9 +502,12 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBillingRoute: AuthenticatedBillingRoute,
+  AuthenticatedChangesRoute: AuthenticatedChangesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDevicesRoute: AuthenticatedDevicesRoute,
   AuthenticatedFeedbackRoute: AuthenticatedFeedbackRoute,
   AuthenticatedLearnRoute: AuthenticatedLearnRoute,
+  AuthenticatedWorkflowsRoute: AuthenticatedWorkflowsRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
   AuthenticatedSettingsProfileRoute: AuthenticatedSettingsProfileRoute,
   AuthenticatedSettingsSecurityRoute: AuthenticatedSettingsSecurityRoute,
