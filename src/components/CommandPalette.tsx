@@ -34,6 +34,8 @@ import { listProjects } from "@/lib/saved-projects.functions";
 import type { ToolId } from "@/lib/ai.functions";
 
 const TOOLS: { id: ToolId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: "change-agent", label: "AI Change Agent", icon: Workflow },
+  { id: "compliance", label: "Config Compliance Checker", icon: Shield },
   { id: "multi-vendor", label: "Multi-Vendor Config Generator", icon: Layers },
   { id: "troubleshooter", label: "AI Network Troubleshooter", icon: Search },
   { id: "automation-studio", label: "Automation Studio", icon: FileCode2 },

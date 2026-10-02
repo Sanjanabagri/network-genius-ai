@@ -137,6 +137,25 @@ const TOOLS: Record<ToolId, ToolDef> = {
     placeholder: "Describe what the script should automate…",
     example: "Back up running-config from 100 Cisco IOS devices to timestamped files in ./backups.",
   },
+  compliance: {
+    id: "compliance",
+    title: "Config Compliance Checker",
+    tagline: "Audit a device config against golden rules and CIS-style best practices.",
+    icon: ShieldCheck,
+    vendors: ["Cisco IOS", "Cisco IOS-XE", "Cisco NX-OS", "Juniper Junos", "Arista EOS", "Palo Alto PAN-OS", "Fortinet FortiOS", "Aruba AOS-CX"],
+    allowAttachments: true,
+    placeholder: "Paste the running config. Optionally list your golden rules first (e.g. 'SSH v2 only, NTP to 10.1.1.1, no telnet').",
+    example: "Golden rules: SSH v2 only, AAA via TACACS, NTP 10.10.10.5, logging to 10.10.10.20, no HTTP server.\n\nhostname EDGE-1\nip http server\nline vty 0 4\n transport input telnet ssh",
+  },
+  "change-agent": {
+    id: "change-agent",
+    title: "AI Change Agent",
+    tagline: "One request → full change package: plan, configs, pre/post checks, rollback, approval summary.",
+    icon: Bot,
+    vendors: ["Cisco IOS-XE", "Cisco NX-OS", "Juniper Junos", "Arista EOS", "Palo Alto PAN-OS", "Fortinet FortiOS", "Multi-vendor"],
+    placeholder: "Describe the network change you need end-to-end…",
+    example: "Add VLAN 30 (VOICE) to all 4 access switches at Branch-2, trunk it to the core pair, and enable QoS trust on IP phone ports. Change window Saturday 22:00.",
+  },
 };
 
 export const TOOL_LIST: ToolDef[] = Object.values(TOOLS);
@@ -170,7 +189,7 @@ export const Route = createFileRoute("/_authenticated/tools/$tool")({
   errorComponent: ({ error, reset }) => (
     <main className="mx-auto max-w-3xl px-6 py-24 text-center">
       <h1 className="font-display text-2xl font-bold">Something went wrong</h1>
-      <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{(error as Error).message}</p>
       <button onClick={reset} className="mt-6 rounded-lg bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
         Try again
       </button>

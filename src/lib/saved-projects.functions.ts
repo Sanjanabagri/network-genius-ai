@@ -5,7 +5,7 @@ import { planOf } from "@/lib/plans";
 
 const TOOL_IDS = [
   "config", "troubleshoot", "script", "mop", "rollback", "cli", "docs", "incident", "workflow",
-  "multi-vendor", "troubleshooter", "automation-studio",
+  "multi-vendor", "troubleshooter", "automation-studio", "compliance", "change-agent",
 ] as const;
 
 export type SavedProject = {
