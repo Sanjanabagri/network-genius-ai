@@ -48,6 +48,9 @@ export const Route = createFileRoute("/_authenticated")({
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/projects", label: "Saved projects", icon: FolderOpen },
+  { to: "/workflows", label: "Workflow builder", icon: Network },
+  { to: "/changes", label: "Change approvals", icon: Shield },
+  { to: "/devices", label: "Device inventory", icon: BarChart3 },
   { to: "/teams", label: "Teams", icon: Users },
   { to: "/learn", label: "Learning Center", icon: GraduationCap },
   { to: "/billing", label: "Billing & plans", icon: CreditCard },
