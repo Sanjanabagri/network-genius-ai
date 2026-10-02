@@ -47,6 +47,8 @@ const modules: {
   category: ModuleCategory;
   badge?: string;
 }[] = [
+  { id: "change-agent", icon: Workflow, title: "AI Change Agent", desc: "One request → plan, config, checks, rollback, playbook", category: "Automate", badge: "New" },
+  { id: "compliance", icon: Search, title: "Config Compliance Checker", desc: "Audit configs vs golden rules, auto-remediate", category: "Config", badge: "New" },
   { id: "multi-vendor", icon: Layers, title: "Multi-Vendor Config Generator", desc: "Cisco, Palo Alto, Fortinet, Juniper, Aruba…", category: "Config", badge: "New" },
   { id: "troubleshooter", icon: Search, title: "AI Network Troubleshooter", desc: "Upload logs & screenshots, get root cause", category: "Troubleshoot", badge: "New" },
   { id: "automation-studio", icon: FileCode2, title: "Automation Studio", desc: "Python, Netmiko, NAPALM, Nornir, Ansible, Terraform", category: "Automate", badge: "New" },

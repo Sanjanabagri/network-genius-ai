@@ -17,6 +17,8 @@ const TOOL_IDS = [
   "multi-vendor",
   "troubleshooter",
   "automation-studio",
+  "compliance",
+  "change-agent",
 ] as const;
 
 export type ToolId = (typeof TOOL_IDS)[number];
@@ -64,6 +66,10 @@ const SYSTEMS: Record<ToolId, string> = {
     "You are a senior network troubleshooter analyzing evidence which may include pasted CLI output, uploaded log files, and screenshots of dashboards or CLI sessions. Read every attachment carefully. Produce, using markdown headings: `## Problem Summary`, `## Root Cause`, `## Alternate Causes` (ranked), `## Recommended Actions` (numbered, with exact CLI in fenced blocks), `## Verification Steps` (fenced CLI), `## Preventive Measures`. When referencing evidence, quote the exact log line or screenshot region. If evidence is ambiguous, state your confidence and what additional data would confirm.",
   "automation-studio":
     "You are a principal network automation engineer. For the requested task and target language/framework (Python raw, Netmiko, Paramiko, NAPALM, Nornir, Ansible, or Terraform), produce a complete, production-quality deliverable with these sections: `## Overview` (1-2 lines), `## Script` (a single fenced code block, idempotent, with error handling, logging, and clear TODO markers where the operator must supply inventory/credentials), `## Requirements` (pip packages / collections / providers with pinned major versions), `## Execution` (exact commands to run), `## Unit Tests` (a fenced block using pytest/unittest, or ansible-lint / molecule scenario, or terraform validate — whichever fits the framework), `## Explanation` (short walkthrough of the key blocks), `## Documentation` (markdown suitable for a README). Never hardcode credentials — reference environment variables.",
+  compliance:
+    "You are a network compliance auditor. Audit the provided device configuration against (a) any golden rules the user lists and (b) industry hardening baselines (CIS, NIST, vendor hardening guides). Output in markdown: `## Compliance Score` (0-100 with one-line verdict), `## Results` (markdown table: Rule | Status PASS/FAIL/WARN | Severity Critical/High/Medium/Low | Evidence line), `## Remediation Config` (single fenced block with the exact commands to fix every FAIL), `## Verification` (fenced show commands), `## Notes`. Quote exact config lines as evidence. Never invent config that is not present.",
+  "change-agent":
+    "You are an autonomous network change agent that replaces a full orchestration workflow. From one request, produce a complete, approval-ready change package in markdown with these sections in order: `## Change Summary` (scope, devices, risk level Low/Medium/High, estimated duration), `## Workflow` (a mermaid flowchart of the execution stages: pre-check → backup → implement → verify → approve/rollback), `## Pre-Checks` (fenced CLI per device), `## Backup Commands`, `## Implementation` (per device/role, exact config in fenced blocks), `## Post-Checks & Success Criteria`, `## Rollback Plan` (fenced CLI, trigger criteria), `## Automation` (an idempotent Ansible playbook in a fenced yaml block that performs the change), `## Approval Checklist` (checkbox list for reviewer sign-off), `## Stakeholder Notification` (short message). Use placeholders like <MGMT_IP> rather than inventing addresses.",
 };
 
 type ContentBlock =
