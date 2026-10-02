@@ -119,6 +119,99 @@ export type Database = {
         }
         Relationships: []
       }
+      change_requests: {
+        Row: {
+          created_at: string
+          description: string | null
+          devices: string | null
+          history: Json
+          id: string
+          plan: string | null
+          risk: string
+          scheduled_for: string | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          devices?: string | null
+          history?: Json
+          id?: string
+          plan?: string | null
+          risk?: string
+          scheduled_for?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          devices?: string | null
+          history?: Json
+          id?: string
+          plan?: string | null
+          risk?: string
+          scheduled_for?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      devices: {
+        Row: {
+          created_at: string
+          hostname: string
+          id: string
+          mgmt_ip: string | null
+          model: string | null
+          notes: string | null
+          os_version: string | null
+          role: string | null
+          site: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          vendor: string
+        }
+        Insert: {
+          created_at?: string
+          hostname: string
+          id?: string
+          mgmt_ip?: string | null
+          model?: string | null
+          notes?: string | null
+          os_version?: string | null
+          role?: string | null
+          site?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          vendor: string
+        }
+        Update: {
+          created_at?: string
+          hostname?: string
+          id?: string
+          mgmt_ip?: string | null
+          model?: string | null
+          notes?: string | null
+          os_version?: string | null
+          role?: string | null
+          site?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          vendor?: string
+        }
+        Relationships: []
+      }
       feedback: {
         Row: {
           admin_note: string | null
@@ -391,6 +484,36 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      workflows: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          steps: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          steps?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          steps?: Json
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
