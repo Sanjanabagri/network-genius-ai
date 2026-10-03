@@ -24,6 +24,7 @@ function ChangesPage() {
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState("all");
   const [form, setForm] = useState({ title: "", description: "", risk: "medium", devices: "", scheduled_for: "", plan: "" });
+  const { data: me } = useQuery({ queryKey: ["me"], queryFn: async () => (await supabase.auth.getUser()).data.user?.id ?? null });
 
   const { data, isLoading } = useQuery({
     queryKey: ["change_requests"],
@@ -121,10 +122,12 @@ function ChangesPage() {
                 {r.devices && <p><span className="text-muted-foreground">Devices:</span> <span className="font-mono">{r.devices}</span></p>}
                 {r.plan && <pre className="max-h-72 overflow-auto rounded-lg bg-muted p-3 text-xs">{r.plan}</pre>}
                 <div className="flex flex-wrap gap-2">
-                  {r.status === "pending" && <>
+                  {r.status === "pending" && (r.user_id === me ? (
+                    <p className="text-xs text-muted-foreground">Waiting for another reviewer — you can't approve your own change.</p>
+                  ) : <>
                     <button onClick={() => act.mutate({ id: r.id, status: "approved", history })} className="inline-flex items-center gap-1 rounded-lg border border-primary/40 px-3 py-1.5 text-xs text-primary"><CheckCircle2 className="h-3.5 w-3.5" /> Approve</button>
                     <button onClick={() => act.mutate({ id: r.id, status: "rejected", history })} className="inline-flex items-center gap-1 rounded-lg border border-destructive/40 px-3 py-1.5 text-xs text-destructive"><XCircle className="h-3.5 w-3.5" /> Reject</button>
-                  </>}
+                  </>)}
                   {r.status === "approved" && <button onClick={() => act.mutate({ id: r.id, status: "implemented", history })} className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs"><Rocket className="h-3.5 w-3.5" /> Mark implemented</button>}
                 </div>
                 <div>
