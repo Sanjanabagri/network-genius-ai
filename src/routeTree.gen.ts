@@ -29,11 +29,13 @@ import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
 import { Route as AuthOtpRouteImport } from './routes/auth.otp'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
 import { Route as AuthenticatedProjectsIdRouteImport } from './routes/_authenticated/projects.$id'
+import { Route as AuthenticatedSettingsApiRouteImport } from './routes/_authenticated/settings.api'
 import { Route as AuthenticatedSettingsProfileRouteImport } from './routes/_authenticated/settings.profile'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as AuthenticatedTeamsIndexRouteImport } from './routes/_authenticated/teams.index'
 import { Route as AuthenticatedTeamsIdRouteImport } from './routes/_authenticated/teams.$id'
 import { Route as AuthenticatedToolsToolRouteImport } from './routes/_authenticated/tools/$tool'
+import { Route as ApiPublicV1GenerateRouteImport } from './routes/api/public/v1/generate'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -134,6 +136,12 @@ const AuthenticatedProjectsIdRoute = AuthenticatedProjectsIdRouteImport.update({
   path: '/projects/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSettingsApiRoute =
+  AuthenticatedSettingsApiRouteImport.update({
+    id: '/settings/api',
+    path: '/settings/api',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsProfileRoute =
   AuthenticatedSettingsProfileRouteImport.update({
     id: '/settings/profile',
@@ -161,6 +169,11 @@ const AuthenticatedToolsToolRoute = AuthenticatedToolsToolRouteImport.update({
   path: '/tools/$tool',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicV1GenerateRoute = ApiPublicV1GenerateRouteImport.update({
+  id: '/api/public/v1/generate',
+  path: '/api/public/v1/generate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -180,12 +193,14 @@ export interface FileRoutesByFullPath {
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/settings/api': typeof AuthenticatedSettingsApiRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/teams/$id': typeof AuthenticatedTeamsIdRoute
   '/tools/$tool': typeof AuthenticatedToolsToolRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
   '/teams/': typeof AuthenticatedTeamsIndexRoute
+  '/api/public/v1/generate': typeof ApiPublicV1GenerateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -205,12 +220,14 @@ export interface FileRoutesByTo {
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
   '/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/settings/api': typeof AuthenticatedSettingsApiRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/teams/$id': typeof AuthenticatedTeamsIdRoute
   '/tools/$tool': typeof AuthenticatedToolsToolRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/teams': typeof AuthenticatedTeamsIndexRoute
+  '/api/public/v1/generate': typeof ApiPublicV1GenerateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -233,12 +250,14 @@ export interface FileRoutesById {
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
   '/_authenticated/projects/$id': typeof AuthenticatedProjectsIdRoute
+  '/_authenticated/settings/api': typeof AuthenticatedSettingsApiRoute
   '/_authenticated/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/_authenticated/teams/$id': typeof AuthenticatedTeamsIdRoute
   '/_authenticated/tools/$tool': typeof AuthenticatedToolsToolRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/_authenticated/teams/': typeof AuthenticatedTeamsIndexRoute
+  '/api/public/v1/generate': typeof ApiPublicV1GenerateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -260,12 +279,14 @@ export interface FileRouteTypes {
     | '/auth/forgot'
     | '/auth/otp'
     | '/projects/$id'
+    | '/settings/api'
     | '/settings/profile'
     | '/settings/security'
     | '/teams/$id'
     | '/tools/$tool'
     | '/projects/'
     | '/teams/'
+    | '/api/public/v1/generate'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -285,12 +306,14 @@ export interface FileRouteTypes {
     | '/auth/forgot'
     | '/auth/otp'
     | '/projects/$id'
+    | '/settings/api'
     | '/settings/profile'
     | '/settings/security'
     | '/teams/$id'
     | '/tools/$tool'
     | '/projects'
     | '/teams'
+    | '/api/public/v1/generate'
   id:
     | '__root__'
     | '/'
@@ -312,12 +335,14 @@ export interface FileRouteTypes {
     | '/auth/forgot'
     | '/auth/otp'
     | '/_authenticated/projects/$id'
+    | '/_authenticated/settings/api'
     | '/_authenticated/settings/profile'
     | '/_authenticated/settings/security'
     | '/_authenticated/teams/$id'
     | '/_authenticated/tools/$tool'
     | '/_authenticated/projects/'
     | '/_authenticated/teams/'
+    | '/api/public/v1/generate'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -329,6 +354,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
+  ApiPublicV1GenerateRoute: typeof ApiPublicV1GenerateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -473,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings/api': {
+      id: '/_authenticated/settings/api'
+      path: '/settings/api'
+      fullPath: '/settings/api'
+      preLoaderRoute: typeof AuthenticatedSettingsApiRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/profile': {
       id: '/_authenticated/settings/profile'
       path: '/settings/profile'
@@ -508,6 +541,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedToolsToolRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/v1/generate': {
+      id: '/api/public/v1/generate'
+      path: '/api/public/v1/generate'
+      fullPath: '/api/public/v1/generate'
+      preLoaderRoute: typeof ApiPublicV1GenerateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -532,6 +572,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLearnRoute: typeof AuthenticatedLearnRoute
   AuthenticatedWorkflowsRoute: typeof AuthenticatedWorkflowsRoute
   AuthenticatedProjectsIdRoute: typeof AuthenticatedProjectsIdRoute
+  AuthenticatedSettingsApiRoute: typeof AuthenticatedSettingsApiRoute
   AuthenticatedSettingsProfileRoute: typeof AuthenticatedSettingsProfileRoute
   AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
   AuthenticatedTeamsIdRoute: typeof AuthenticatedTeamsIdRoute
@@ -549,6 +590,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLearnRoute: AuthenticatedLearnRoute,
   AuthenticatedWorkflowsRoute: AuthenticatedWorkflowsRoute,
   AuthenticatedProjectsIdRoute: AuthenticatedProjectsIdRoute,
+  AuthenticatedSettingsApiRoute: AuthenticatedSettingsApiRoute,
   AuthenticatedSettingsProfileRoute: AuthenticatedSettingsProfileRoute,
   AuthenticatedSettingsSecurityRoute: AuthenticatedSettingsSecurityRoute,
   AuthenticatedTeamsIdRoute: AuthenticatedTeamsIdRoute,
@@ -581,6 +623,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
+  ApiPublicV1GenerateRoute: ApiPublicV1GenerateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

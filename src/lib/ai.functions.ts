@@ -3,7 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { planOf } from "@/lib/plans";
 import { z } from "zod";
 
-const TOOL_IDS = [
+export const TOOL_IDS = [
   "config",
   "troubleshoot",
   "script",
@@ -40,7 +40,7 @@ const InputSchema = z.object({
   attachments: z.array(AttachmentSchema).max(6).optional(),
 });
 
-const SYSTEMS: Record<ToolId, string> = {
+export const SYSTEMS: Record<ToolId, string> = {
   config:
     "You are a senior network engineer. Generate a production-grade device configuration for the requested vendor and use case. Output ONLY the configuration inside a single fenced code block appropriate to the vendor CLI, preceded by a short 2-3 line summary and followed by a short 'Notes' section covering assumptions and prerequisites. Never invent IP addresses; use placeholders if the user did not give them.",
   troubleshoot:

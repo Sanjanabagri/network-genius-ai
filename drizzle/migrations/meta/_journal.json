@@ -8,6 +8,13 @@
       "when": 1790998824592,
       "tag": "0000_security_and_two_person_approval",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791254634259,
+      "tag": "0001_api_keys",
+      "breakpoints": true
     }
   ]
 }
