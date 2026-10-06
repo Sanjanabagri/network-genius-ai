@@ -15,7 +15,7 @@ export const Route = createFileRoute("/privacy")({
       { h: "AI processing", p: "Prompts are sent to our AI providers solely to generate responses. Do not submit passwords, secrets or keys; redact sensitive values from configurations before uploading." },
       { h: "Storage and security", p: "Data is stored with row-level access controls so only you (and teammates you invite) can see your content. Two-factor authentication is available." },
       { h: "Retention and deletion", p: "You can delete saved projects, devices and workflows at any time. To delete your account and all associated data, contact us." },
-      { h: "Contact", p: "For privacy questions or data requests, use the Feedback page inside the app." },
+      { h: "Contact", p: "For privacy questions or data requests, email sanjanabagri52ggn@gmail.com or use the Feedback page inside the app." },
     ]} />
   ),
 });
