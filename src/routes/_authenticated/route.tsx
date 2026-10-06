@@ -211,6 +211,11 @@ function AuthedLayout() {
                     <Shield className="text-muted-foreground" /> Security &amp; 2FA
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/settings/api" className={menuLinkClass}>
+                    <Shield className="text-muted-foreground" /> API &amp; integrations
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link to="/projects" className={menuLinkClass}>
