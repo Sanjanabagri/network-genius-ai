@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { CheckCircle2, ClipboardCheck, Loader2, Plus, XCircle, Rocket } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ClipboardCheck, Loader2, Plus, XCircle, Rocket } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
+import { assessChangeReadiness, type ChangeReadiness } from "@/lib/change-readiness";
 
 export const Route = createFileRoute("/_authenticated/changes")({
   head: () => ({ meta: [{ title: "Change Approvals · NetAssist AI" }, { name: "robots", content: "noindex" }] }),
@@ -19,12 +20,50 @@ const STATUS_STYLE: Record<string, string> = {
   implemented: "bg-muted text-foreground border-border",
 };
 
+function ReadinessReport({ assessment }: { assessment: ChangeReadiness }) {
+  return (
+    <section className="mt-4 border-t border-border pt-4" aria-live="polite">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="flex items-center gap-2 text-sm font-semibold">
+            {assessment.ready ? <CheckCircle2 className="h-4 w-4 text-primary" /> : <AlertTriangle className="h-4 w-4 text-accent" />}
+            {assessment.ready ? "Ready for review" : "Needs attention before review"}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{assessment.readyCount} of {assessment.total} readiness checks complete</p>
+        </div>
+        <span className="rounded-md border border-border px-2.5 py-1 text-xs font-semibold tabular-nums">{assessment.percentage}%</span>
+      </div>
+      <ul className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
+        {assessment.checks.map((check) => (
+          <li key={check.id} className="flex min-w-0 items-start gap-2">
+            {check.ready ? <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" /> : <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />}
+            <span className="min-w-0">
+              <span className="font-medium">{check.label}</span>
+              {!check.ready && <span className="block text-muted-foreground">{check.detail}</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-[11px] text-muted-foreground">Checks use the saved request and inventory only; they do not contact or verify live devices.</p>
+    </section>
+  );
+}
+
 function ChangesPage() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState("all");
   const [form, setForm] = useState({ title: "", description: "", risk: "medium", devices: "", scheduled_for: "", plan: "" });
   const { data: me } = useQuery({ queryKey: ["me"], queryFn: async () => (await supabase.auth.getUser()).data.user?.id ?? null });
+  const inventory = useQuery({
+    queryKey: ["change-readiness-devices"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("devices").select("hostname").order("hostname");
+      if (error) throw error;
+      return data;
+    },
+  });
+  const inventoryHostnames = (inventory.data ?? []).map((device) => device.hostname);
 
   const { data, isLoading } = useQuery({
     queryKey: ["change_requests"],
@@ -90,6 +129,13 @@ function ChangesPage() {
           <input type="datetime-local" className={input} value={form.scheduled_for} onChange={(e) => setForm({ ...form, scheduled_for: e.target.value })} />
           <textarea className={`${input} sm:col-span-2`} rows={2} placeholder="Description / business reason" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           <textarea className={`${input} font-mono sm:col-span-2`} rows={6} placeholder="Paste the plan (tip: generate it with AI Change Agent)" value={form.plan} onChange={(e) => setForm({ ...form, plan: e.target.value })} />
+          <div className="sm:col-span-2">
+            {inventory.isLoading ? <p className="text-xs text-muted-foreground">Checking saved device inventory…</p> : inventory.isError ? (
+              <p className="text-xs text-destructive">Device inventory could not be checked. You can still submit for review.</p>
+            ) : (
+              <ReadinessReport assessment={assessChangeReadiness({ ...form, inventoryHostnames })} />
+            )}
+          </div>
           <button disabled={create.isPending} className="rounded-lg bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground sm:col-span-2">{create.isPending ? "Submitting…" : "Submit for approval"}</button>
         </form>
       )}
@@ -109,6 +155,15 @@ function ChangesPage() {
           <p className="rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">No change requests here.</p>
         ) : rows.map((r) => {
           const history = (r.history as unknown as HistoryItem[]) ?? [];
+          const readiness = assessChangeReadiness({
+            title: r.title,
+            description: r.description,
+            devices: r.devices,
+            plan: r.plan,
+            risk: r.risk,
+            scheduledFor: r.scheduled_for,
+            inventoryHostnames,
+          });
           return (
             <details key={r.id} className="rounded-2xl border border-border bg-card p-4">
               <summary className="flex cursor-pointer flex-wrap items-center gap-3">
@@ -121,6 +176,9 @@ function ChangesPage() {
                 {r.description && <p className="text-muted-foreground">{r.description}</p>}
                 {r.devices && <p><span className="text-muted-foreground">Devices:</span> <span className="font-mono">{r.devices}</span></p>}
                 {r.plan && <pre className="max-h-72 overflow-auto rounded-lg bg-muted p-3 text-xs">{r.plan}</pre>}
+                {inventory.isLoading ? <p className="text-xs text-muted-foreground">Checking saved device inventory…</p> : inventory.isError ? (
+                  <p className="text-xs text-destructive">Device inventory could not be checked.</p>
+                ) : <ReadinessReport assessment={readiness} />}
                 <div className="flex flex-wrap gap-2">
                   {r.status === "pending" && (r.user_id === me ? (
                     <p className="text-xs text-muted-foreground">Waiting for another reviewer — you can't approve your own change.</p>

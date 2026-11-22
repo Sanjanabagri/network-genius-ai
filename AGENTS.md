@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep change readiness as a deterministic assessment of saved request text and inventory, because no live device connector is available for reachability or execution claims.
